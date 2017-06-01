@@ -1,36 +1,26 @@
 ## angular-filemanager
 
-A very smart filemanager to manage your files in the browser developed in AngularJS with Material-Design styles by [Jonas Sciangula Street](https://github.com/joni2back)
-
-[![Build Status](https://travis-ci.org/joni2back/angular-filemanager.svg?branch=master)](https://travis-ci.org/joni2back/angular-filemanager)
+A very smart filemanager to manage your files in the browser developed in AngularJS by [Jonas Sciangula Street](https://github.com/joni2back) 
+Heavily modified into a Shift dapp, to work with IPFS as a backend by [Ralf S](https://shiftnrg.org)
 
 ### Support
-This project is under free license. If you want to support the angular-filemanager development or just thank it's main maintainer by paying a beer, you can make a donation by clicking the following button  [![Donate](https://www.paypal.com/en_GB/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=XRB7EW72PS982) 
+This project is under free license. 
 
-
-#### [Try the DEMO](http://angular-filemanager.zendelsolutions.com/)
+#### [Try the DEMO](https://preview.shiftnrg.org)
 ---------
-![](https://raw.githubusercontent.com/joni2back/angular-filemanager/master/screenshot.gif)
 
 ### Features
-  - Multilanguage (
-  English, Chinese, Spanish, Russian, Portuguese, French, German, Slovak, Hebrew, Persan, Ukrainian, Turkish)
+  - Multilanguage (English, Dutch, Chinese, Spanish, Russian, Portuguese, French, German, Slovak, Hebrew, Persan, Ukrainian, Turkish)
   - Multiple templates (List / Icons)
   - Multiple file upload
   - Multiple file support
-  - Pick files callback for third parties apps
+  - Advanced code editor
+  - Pick files callback
   - Search files
   - Directory tree navigation
   - Copy, Move, Rename (Interactive UX)
   - Delete, Edit, Preview, Download
-  - File permissions (Unix chmod style)
   - Mobile support
-
-### TODO
-  - Drag and drop
-  - Dropbox and Google Drive compatibility
-  - Extend backend bridges (PHP, Java, Python, Node, .Net)
-  - Migrate jQuery to native or angular.element
 
 ### Backend API
 [Read the docs](API.md)
@@ -116,8 +106,7 @@ angular.module('FileManagerApp').config(['fileManagerConfigProvider', function (
 ---------
 
 ### Contribute
-To contribute to the project you can simply fork this repo. To build a minified version, you can simply run the Gulp
-task `gulp build`. The minified/uglified files are created in the `dist` folder.
+To build a minified version, you can simply run the Gulp task `gulp build`. The minified/uglified files are created in the `dist` folder.
 
 ### Versioning
 For transparency into our release cycle and in striving to maintain backward compatibility, angular-filemanager is maintained under [the Semantic Versioning guidelines](http://semver.org/).
