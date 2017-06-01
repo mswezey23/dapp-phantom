@@ -1,0 +1,44 @@
+<div ng-controller="FileManagerCtrl" ngf-drop="addForUpload($files)" ngf-drag-over-class="'upload-dragover'" ngf-allow-dir="true" ngf-include-dir="true" ngf-multiple="true" ngf-model-options="{updateOn:'drop dropUrl'}">
+    <div ng-include="config.tplPath + '/navbar.html'"></div>
+
+	<div class="row panel panel-default">
+		<div class="panel-heading">
+			<div class="input-group">
+			  <span class="input-group-addon">Merkle root</span>
+			  <span class="input-group-addon">#</span>
+<!--		  <input id="merkle" style="margin-top:12px; padding-left:8px" type="text" placeholder="{{ config.rootPath }}" class="form-control input-lg" ng-change="setMerkle()" ng-model="merkleRoot">
+//-->		  <div class="input-field">
+				<input id="merkle" style="padding-left:10px" type="text" class="form-control input-lg" ng-change="setMerkle()" ng-model="merkleRoot">
+				<label for="merkle" style="padding-left:10px"><span class="ng-scope">{{ config.rootPath }}</span></label>
+              </div>
+			  <div class="input-group-btn" dropdown>
+				<div class="dropdown-more-group" id="merkleActions" dropdown-toggle>
+				  <span class="table-more-actions">
+					<span class="dots"></span>
+				  </span>
+				</div>
+				<ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="merkleActions">
+				  <li><a href="{{ config.gatewayUrl+'/'+config.rootPath }}" target="_blank"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span> View Gateway</a></li>
+				  <li><a href="javascript:void(0)" id="publishbtn" ng-click="publish()"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> Publish</a></li>
+				  <li role="separator" class="divider"></li>
+				  <li>
+					<a href="javascript:void(0)" clipboard data-clipboard-text="{{ config.rootPath }}" clipboard-success="clipboardSuccess(e);" clipboard-error="clipboardError(e);">
+					  <span class="glyphicon glyphicon-copy" aria-hidden="true"></span> <translate>Copy Address</translate>
+					</a>
+				  </li>
+				</ul>
+			  </div>
+			</div>
+		</div>
+        <div class="panel-body">
+			<div class="col-sm-4 col-md-3 sidebar file-tree animated slow fadeIn" ng-include="config.tplPath + '/sidebar.html'" ng-show="config.sidebar &amp;&amp; fileNavigator.history[0]">
+			</div>
+
+			<div class="main" ng-class="config.sidebar &amp;&amp; fileNavigator.history[0] &amp;&amp; 'col-sm-8 col-md-9'">
+				<div ng-include="config.tplPath + '/' + viewTemplate" class="main-navigation clearfix"></div>
+			</div>
+		</div>
+    </div>
+    <div ng-include="config.tplPath + '/modals.html'"></div>
+    <div ng-include="config.tplPath + '/item-context-menu.html'"></div>
+</div>

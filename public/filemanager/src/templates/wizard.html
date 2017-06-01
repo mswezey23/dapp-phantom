@@ -1,0 +1,267 @@
+<script>
+$(document).ready(function () {
+    //Initialize tooltips
+    $('.nav-tabs > li a[title]').tooltip();
+    
+    //Wizard
+    $('a[data-toggle="tab"]').on('show.bs.tab', function (e) {
+        var $target = $(e.target);
+    
+        if ($target.parent().hasClass('disabled')) {
+            return false;
+        }
+    });
+
+    $(".next-step").click(function (e) {
+        var $active = $('.wizard .nav-tabs li.active');
+        $active.next().removeClass('disabled');
+        nextTab($active);
+    });
+
+    $(".prev-step").click(function (e) {
+        var $active = $('.wizard .nav-tabs li.active');
+        prevTab($active);
+    });
+});
+
+function nextTab(elem) {
+    $(elem).next().find('a[data-toggle="tab"]').click();
+}
+function prevTab(elem) {
+    $(elem).prev().find('a[data-toggle="tab"]').click();
+}
+</script>
+<style>
+.wizard {
+    margin: 10px auto;
+    background: #fff;
+}
+
+.wizard .nav-tabs {
+	position: relative;
+	margin: 0 auto;
+	margin-bottom: 0;
+	border-bottom-color: #e0e0e0;
+}
+
+.wizard > div.wizard-inner {
+	position: relative;
+}
+
+.connecting-line {
+    height: 2px;
+    background: #e0e0e0;
+    position: absolute;
+    width: 80%;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    top: 50%;
+    z-index: 1;
+}
+
+.wizard .nav-tabs > li.active > a, .wizard .nav-tabs > li.active > a:hover, .wizard .nav-tabs > li.active > a:focus {
+    color: #555555;
+    cursor: default;
+    border: 0;
+    border-bottom-color: transparent;
+}
+
+span.round-tab {
+    width: 70px;
+    height: 70px;
+    line-height: 70px;
+    display: inline-block;
+    border-radius: 100px;
+    background: #fff;
+    border: 2px solid #e0e0e0;
+    z-index: 2;
+    position: absolute;
+    left: 0;
+    text-align: center;
+    font-size: 25px;
+}
+span.round-tab i{
+    color:#555555;
+}
+.wizard li.active span.round-tab {
+    background: #fff;
+    border: 2px solid #5bc0de;
+    
+}
+.wizard li.active span.round-tab i{
+    color: #5bc0de;
+}
+
+span.round-tab:hover {
+    color: #333;
+    border: 2px solid #333;
+}
+
+.wizard .nav-tabs > li {
+    width: 25%;
+}
+
+.wizard li:after {
+    content: " ";
+    position: absolute;
+    left: 46%;
+    opacity: 0;
+    margin: 0 auto;
+    bottom: 0px;
+    border: 5px solid transparent;
+    border-bottom-color: #5bc0de;
+    transition: 0.1s ease-in-out;
+}
+
+.wizard li.active:after {
+    content: " ";
+    position: absolute;
+    left: 46%;
+    opacity: 1;
+    margin: 0 auto;
+    bottom: 0px;
+    border: 10px solid transparent;
+    border-bottom-color: #5bc0de;
+}
+
+.wizard .nav-tabs > li a {
+    width: 70px;
+    height: 70px;
+    margin: 20px auto;
+    border-radius: 100%;
+    padding: 0;
+}
+
+.wizard .nav-tabs > li a:hover {
+	background: transparent;
+}
+
+.wizard .tab-pane {
+    position: relative;
+    padding: 25px auto;
+}
+
+.wizard h3 {
+    margin: 20px auto;
+	font-weight: bold;
+	font-size: 1.25em;
+}
+
+.wizard small {
+	font-size: .9em;
+}
+
+.wizard .glyphicon {
+	top: -3px;
+}
+
+@media( max-width : 585px ) {
+    .wizard {
+        width: 90%;
+        height: auto !important;
+    }
+
+    span.round-tab {
+        font-size: 16px;
+        width: 50px;
+        height: 50px;
+        line-height: 50px;
+    }
+
+    .wizard .nav-tabs > li a {
+        width: 50px;
+        height: 50px;
+        line-height: 50px;
+    }
+
+    .wizard li.active:after {
+        content: " ";
+        position: absolute;
+        left: 35%;
+    }
+}
+</style>
+<div class="wizard">
+	<div class="wizard-inner">
+		<div class="connecting-line"></div>
+		<ul class="nav nav-tabs" role="tablist">
+
+			<li role="presentation" class="active">
+				<a href="#step1" data-toggle="tab" aria-controls="step1" role="tab" title="Step 1">
+					<span class="round-tab">
+						<i class="glyphicon glyphicon-folder-open"></i>
+					</span>
+				</a>
+			</li>
+
+			<li role="presentation" class="disabled">
+				<a href="#step2" data-toggle="tab" aria-controls="step2" role="tab" title="Step 2">
+					<span class="round-tab">
+						<i class="glyphicon glyphicon-pencil"></i>
+					</span>
+				</a>
+			</li>
+			<li role="presentation" class="disabled">
+				<a href="#step3" data-toggle="tab" aria-controls="step3" role="tab" title="Step 3">
+					<span class="round-tab">
+						<i class="glyphicon glyphicon-cloud-upload"></i>
+					</span>
+				</a>
+			</li>
+
+			<li role="presentation" class="disabled">
+				<a href="#complete" data-toggle="tab" aria-controls="complete" role="tab" title="Complete">
+					<span class="round-tab">
+						<i class="glyphicon glyphicon-ok"></i>
+					</span>
+				</a>
+			</li>
+		</ul>
+	</div>
+
+	<form role="form">
+		<div class="tab-content">
+			<div class="tab-pane active" role="tabpanel" id="step1">
+				<h3>1. Decentralized content</h3>
+				<p>The SHIFT client will resolve our latest content from the IPFS network.</p>
+				<p>All files are nested in a tree, so we can keep it structured, like we are all used to.</p><br/>
+				<p>The content we load here, is from the top level domain: <a href="http://ipfspage.com" target="_blank">ipfspage.com</a>.</p><br/>
+				<ul class="modal-footer list-inline pull-right">
+					<li><button type="button" class="btn btn-default next-step">Next</button></li>
+				</ul>
+			</div>
+			<div class="tab-pane" role="tabpanel" id="step2">
+				<h3>2. Versioning</h3>
+				<p>You are able to modify the content yourself, using the build-in code editor.</p>
+				<p>There's a <a href="">help</a> button to assist you. Don't worry.</p><br/>
+				<p>New: it's even possible to drop a full site folder from you OS onto the file manager.</p>
+				<ul class="modal-footer list-inline pull-right">
+					<li><button type="button" class="btn btn-default prev-step">Previous</button></li>
+					<li><button type="button" class="btn btn-default next-step">Next</button></li>
+				</ul>
+			</div>
+			<div class="tab-pane" role="tabpanel" id="step3">
+				<h3>3. Publishing</h3>
+				<p>Publishing your content to a top level domain is just a one-click process.</p>
+				<p>So you can publish the content to <a href="http://ipfspage.com" target="_blank">ipfspage.com</a> yourself.<sup>*</sup></p><br/>
+				<p><small>* = Sure, not anybody should to be able to modify, but for this demo we'll let you all.</small></p>
+				<ul class="modal-footer list-inline pull-right">
+					<li><button type="button" class="btn btn-default prev-step">Previous</button></li>
+					<li><button type="button" class="btn btn-default next-step">Finish</button></li>
+				</ul>
+			</div>
+			<div class="tab-pane" role="tabpanel" id="complete">
+				<h3>Let's get started</h3>
+				<p>Once you're finished modifying, preview in gateway. Satisfied? Then publish.</p>
+				<p>Why a regular .com domain? That doesn't look distributed.<sup>*</sup> Well.. it is!</p><br/>
+				<p>That's all. Now you are able to go try it out yourself. Have fun!</p><br/>
+				<p><small>* = We just want you to see decentral content is made easy :-)</small></p>
+				<ul class="modal-footer list-inline pull-right">
+					<li><button type="button" class="btn btn-primary btn-info-full next-step" data-dismiss="modal">Start</button></li>
+				</ul>								
+			</div>
+			<div class="clearfix"></div>
+		</div>
+	</form>
+</div>

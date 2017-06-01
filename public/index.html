@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SHIFT Phantom</title>
+</head>
+<body>
+<style type="text/css">
+#angularFileManager .container-fluid,
+#angularFileManager .navbar-right {
+  padding: 0!important;
+}
+@font-face {
+  font-family: 'Glyphicons Halflings';
+  src: url('./bower_components/bootstrap/fonts/glyphicons-halflings-regular.eot');
+  src: url('./bower_components/bootstrap/fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'), 
+	   url('./bower_components/bootstrap/fonts/glyphicons-halflings-regular.woff2') format('woff2'), 
+	   url('./bower_components/bootstrap/fonts/glyphicons-halflings-regular.woff') format('woff'),
+	   url('./bower_components/bootstrap/fonts/glyphicons-halflings-regular.ttf') format('truetype'), 
+	   url('./bower_components/bootstrap/fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
+}
+.glyphicon {
+  position: relative; top: 1px; display: inline-block;
+  font-family: 'Glyphicons Halflings'; font-style: normal; font-weight: normal; line-height: 1;
+  -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+}
+</style>
+<script type="text/javascript">
+liskApp.cp.register('dapprunController', ['$scope', '$rootScope', "userService", 'viewFactory', 'gettextCatalog', '$stateParams', function ($rootScope, $scope, userService, viewFactory, gettextCatalog, $stateParams) {
+    $scope.view = viewFactory;
+    $scope.view.inLoading = true;
+    $scope.view.loadingText = gettextCatalog.getString('Loading IPFS');
+//	$scope.view.page = {title: gettextCatalog.getString('IPFS'), previous: null};
+    $scope.view.bar = {};
+    $scope.showMore = false;
+    $scope.address = userService.address;
+    $scope.loading = true;
+	
+	// Dynamic 'lazy' loading
+	var path = './dapps/'+$stateParams.dappId;
+	var version = 0.1;
+	var styles = [
+		path + '/filemanager/bower_components/codemirror/lib/codemirror.css',
+		path + '/filemanager/dist/ipfs-filemanager.min.css'
+	].forEach(function(style){
+		$("<link>").attr({rel:"stylesheet", href:style+'?v='+version}).appendTo("head");
+	});
+	var scripts = [
+		/* third party */
+		'./bower_components/bootstrap/dist/js/bootstrap.min.js',
+		path + '/filemanager/bower_components/angular-translate/angular-translate.min.js',
+		path + '/filemanager/bower_components/ng-file-upload/ng-file-upload.min.js',
+		path + '/filemanager/bower_components/codemirror/lib/codemirror.js',
+		path + '/filemanager/bower_components/codemirror/mode/css/css.js',
+		path + '/filemanager/bower_components/codemirror/mode/xml/xml.js',
+		path + '/filemanager/bower_components/codemirror/mode/javascript/javascript.js',
+		path + '/filemanager/bower_components/codemirror/addon/selection/active-line.js',
+		/* ipfs */	
+		path + '/js/multihashing.min.js',
+		path + '/js/nacl_factory.min.js',
+		/* angular-filemanager */
+		path + '/filemanager/dist/ipfs-filemanager.min.js'
+	].forEach(function(script){
+		$("<script>").attr({type:"text/javascript", src:script+'?v='+version}).appendTo("head");
+	});	
+
+	/* Create extra public SHIFT keypair to lookup & publish to IPNS */
+	var publicKey = '';	
+	var salt = userService.address + ' self ' + userService.rememberedPassphrase;
+	var hash = Multihashing.createHash('sha2-256').update(salt, 'utf8').digest();
+	var nacl_instance;
+	nacl_factory.instantiate(function(nacl) {
+		nacl_instance = nacl;
+	});
+	var keypair = nacl_instance.crypto_sign_seed_keypair(hash);
+	publicKey = new Multihashing.Buffer(keypair.signPk).toString("hex");
+	
+	/* Angular-filemanager config */
+    $scope.loadFileManager = function () {	
+		angular.module('FileManagerApp').config(['fileManagerConfigProvider', function (fileManagerConfigProvider) {
+		  var hostname = window.location.hostname,
+			ipfsHost = window.location.protocol + "//" + hostname, 
+			extension = hostname.substring(hostname.lastIndexOf('.')+1),
+			ipfsApi = (hostname == 'preview.shiftnrg.'+extension ? 'https://api.shiftnrg.'+extension : ipfsHost + ':5001') + '/api/v0', 
+			ipfsGateway = (hostname == 'preview.shiftnrg.'+extension ? 'https://gateway.shiftnrg.'+extension : ipfsHost + ':8080') + '/ipfs', 
+			publicGateway = 'https://gateway.shiftnrg.'+(hostname == 'preview.shiftnrg.'+extension ? extension : 'org')+'/ipfs', 
+			merkleHash = 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn',  
+			defaults = fileManagerConfigProvider.$get();
+	  
+		  fileManagerConfigProvider.set({
+			appName: 'IPFS filemanager',
+			defaultLang: $scope.selectedLang,
+			breadcrumb: true,
+			tplPath: path+'/filemanager/src/templates',
+			resolvePath: false && hostname == 'preview.shiftnrg.org' ? 1 : 2, // 0 = ipfs, 1 = ipns, 2 = key 
+			rootPath: merkleHash,
+			hideDate: true,
+			hidePermissions: true,
+			gatewayUrl: publicGateway,
+			publicKey: publicKey,
+			listUrl: ipfsApi+'/ls?headers=false&resolve-type=true&arg=',
+			getContentUrl: ipfsApi+'/cat?arg=',
+			downloadFileUrl: ipfsApi+'/cat?arg=',
+			createFolderUrl: ipfsApi+'/object/patch/add-link?arg=',
+			copyUrl: ipfsApi+'/object/patch/add-link?arg=',
+			removeUrl: ipfsApi+'/object/patch/rm-link?arg=',
+			moveUrl: ipfsApi+'/object/patch/add-link?arg=', 
+			renameUrl: ipfsApi+'/object/patch/add-link?arg=', 
+			editUrl: ipfsApi+'/add?arg=', 
+			uploadUrl: ipfsApi+'/add?arg=',
+			keyGenUrl: ipfsApi+'/key/gen?type=ed25519&arg=',
+			keyValueUrl: ipfsApi+'/key/list?1=true&arg='+publicKey,
+			publishUrl: ipfsApi+'/name/publish?resolve=true&lifetime=336h&ttl=15m&arg=', 
+			resolveUrl: ipfsApi+'/name/resolve?recursive=true&nocache=false&arg=', 
+			pickCallback: function(item) {
+			  var msg = 'Picked %s "%s" [%s] for external use'
+				.replace('%s', item.type)
+				.replace('%s', item.fullPath())
+				.replace('%s', item.hash);
+			  console.log(msg);
+			},
+			allowedActions: angular.extend(defaults.allowedActions, {
+			  changePermissions: false,
+			  extract: false,
+			  compress: false,
+			  downloadMultiple: false,
+			  pickFiles: false,
+			  pickFolders: false
+			})
+		  });
+		}]);
+		
+		// FileManagerApp 
+		var appcontainer = document.getElementById("angularFileManager"),
+			wrapper = angular.element('<angular-filemanager></angular-filemanager>');
+			angular.element(appcontainer).append(wrapper);
+		angular.bootstrap(wrapper, ['FileManagerApp']);
+		
+		// Ready
+		$scope.loading = false;
+		$scope.view.inLoading = false;
+	}
+	
+	// Init
+    $scope.loadFileManager();
+
+}]);
+</script>
+
+<div id="angularFileManager" ng-controller="dapprunController" data-ng-app="FileManagerApp"></div>
+
+</body>
+</html>

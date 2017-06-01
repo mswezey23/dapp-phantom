@@ -1,0 +1,30 @@
+{
+  "name": "angular-filemanager",
+  "version": "1.5.1",
+  "homepage": "https://github.com/joni2back/angular-filemanager",
+  "authors": [
+    "Jonas Sciangula Street <joni2back@gmail.com>",
+	"Ralf S. <ralfs@shiftnrg.org>"
+  ],
+  "description": "A very smart filemanager to manage your files in the browser.",
+  "main": [
+	"dist/ipfs-filemanager.min.css",
+	"dist/ipfs-filemanager.min.js"
+  ],  
+  "keywords": [
+    "filemanager"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-translate": "~2.9.1",
+    "ng-file-upload": "^12.0.1,
+    "codemirror": "~5.24.2"
+  }
+}
