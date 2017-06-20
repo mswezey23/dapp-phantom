@@ -39,12 +39,12 @@ liskApp.cp.register('dapprunController', ['$scope', '$rootScope', "userService",
     $scope.view = viewFactory;
     $scope.view.inLoading = true;
     $scope.view.loadingText = gettextCatalog.getString('Loading IPFS');
-//	$scope.view.page = {title: gettextCatalog.getString('IPFS'), previous: null};
     $scope.view.bar = {};
-	$scope.view.menu = [
+    $scope.view.menu = [
 		{name: 'IPFS Filemanager', state: 'home', icon: 'dashboard-icon'}, 
 		{name: 'Delegates', state: 'delegates', icon: 'delegates-icon'},
 		{name: 'DNS', state: 'dns', icon: 'myvotes-icon'}
+    ];
     $scope.showMore = false;
     $scope.address = userService.address;
     $scope.loading = true;
