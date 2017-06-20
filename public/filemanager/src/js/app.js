@@ -1,10 +1,9 @@
-var fileManagerApp;
 (function(window, angular, $) {
     'use strict';
 
     /**
      * Angular modules
-     */		
+     */	
 	
 	var modules = ['liskApp', 'pascalprecht.translate', 'ngFileUpload'].filter(function(module) {
 	  try {

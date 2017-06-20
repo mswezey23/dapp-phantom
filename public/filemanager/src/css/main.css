@@ -54,6 +54,11 @@ a:hover, .panel-default table td a:hover, .panel-default table td a:active, .pan
   margin: 0 -30px; 
 }
 
+.navbar-status {
+  float: left; 
+  margin: 7px 0 auto 30px;
+}
+
 .navbar .navbar-collapse {
   overflow: visible;
   padding: 0;
@@ -67,6 +72,33 @@ a:hover, .panel-default table td a:hover, .panel-default table td a:active, .pan
   font-size: inherit; 
   height: 55px;
   line-height: 100%;
+}
+
+#ipfs-status {
+  width: 36px; height: 36px;
+  background: #fff url(/images/ipfs-logo-vector-black-outline.svg) no-repeat center center;
+  background-size: 22px 22px;
+  border: 2px solid #aaa;
+  border-radius: 50%;
+}
+#ipfs-status .label { 
+  display: inline-block;
+  top: -16px; left: 16px;
+  min-width: 16px;
+  min-height: 16px;
+  color: #fff;
+  font-size: .7em;
+  padding: .4em;
+  border-radius: 50%;
+}
+#ipfs-status.active {
+  border-color: #5cb85c;
+}
+#ipfs-status.inactive {
+  border-color: #d9534f;
+}
+#ipfs-status.inactive .label {
+	display: none;
 }
 
 .btn.btn-default {

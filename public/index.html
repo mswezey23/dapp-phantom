@@ -12,6 +12,13 @@
 #angularFileManager .navbar-right {
   padding: 0!important;
 }
+.tab-pane .panel {
+	margin-top: 3%;
+}
+#delegates .panel-body,
+#dns .panel-body {
+	padding: 3%; 
+}
 @font-face {
   font-family: 'Glyphicons Halflings';
   src: url('./bower_components/bootstrap/fonts/glyphicons-halflings-regular.eot');
@@ -28,19 +35,24 @@
 }
 </style>
 <script type="text/javascript">
-liskApp.cp.register('dapprunController', ['$scope', '$rootScope', "userService", 'viewFactory', 'gettextCatalog', '$stateParams', function ($rootScope, $scope, userService, viewFactory, gettextCatalog, $stateParams) {
+liskApp.cp.register('dapprunController', ['$scope', '$rootScope', "userService", 'viewFactory', 'gettextCatalog', '$stateParams', '$http', '$timeout', function ($rootScope, $scope, userService, viewFactory, gettextCatalog, $stateParams, $http, $timeout) {
     $scope.view = viewFactory;
     $scope.view.inLoading = true;
     $scope.view.loadingText = gettextCatalog.getString('Loading IPFS');
 //	$scope.view.page = {title: gettextCatalog.getString('IPFS'), previous: null};
     $scope.view.bar = {};
+	$scope.view.menu = [
+		{name: 'IPFS Filemanager', state: 'home', icon: 'dashboard-icon'}, 
+		{name: 'Delegates', state: 'delegates', icon: 'delegates-icon'},
+		{name: 'DNS', state: 'dns', icon: 'myvotes-icon'}
     $scope.showMore = false;
     $scope.address = userService.address;
     $scope.loading = true;
+	$scope.ipfsActive = false;
 	
 	// Dynamic 'lazy' loading
 	var path = './dapps/'+$stateParams.dappId;
-	var version = 0.1;
+	var version = 0.12;
 	var styles = [
 		path + '/filemanager/bower_components/codemirror/lib/codemirror.css',
 		path + '/filemanager/dist/ipfs-filemanager.min.css'
@@ -63,7 +75,8 @@ liskApp.cp.register('dapprunController', ['$scope', '$rootScope', "userService",
 		/* angular-filemanager */
 		path + '/filemanager/dist/ipfs-filemanager.min.js'
 	].forEach(function(script){
-		$("<script>").attr({type:"text/javascript", src:script+'?v='+version}).appendTo("head");
+		if (script) script+= '?v='+version;
+		$("<script>").attr({type:"text/javascript", src:script}).appendTo("head");
 	});	
 
 	/* Create extra public SHIFT keypair to lookup & publish to IPNS */
@@ -75,27 +88,29 @@ liskApp.cp.register('dapprunController', ['$scope', '$rootScope', "userService",
 		nacl_instance = nacl;
 	});
 	var keypair = nacl_instance.crypto_sign_seed_keypair(hash);
-	publicKey = new Multihashing.Buffer(keypair.signPk).toString("hex");
+	publicKey = new Multihashing.Buffer(keypair.signPk).toString("hex");	
 	
 	/* Angular-filemanager config */
-    $scope.loadFileManager = function () {	
+	var hostname = window.location.hostname,
+		ipfsHost = window.location.protocol + "//" + hostname, 
+		extension = hostname.substring(hostname.lastIndexOf('.')+1),
+		ipfsApi = (hostname == 'preview.shiftnrg.'+extension ? 'https://api.shiftnrg.'+extension : ipfsHost + ':5001') + '/api/v0', 
+		ipfsGateway = (hostname == 'preview.shiftnrg.'+extension ? 'https://gateway.shiftnrg.'+extension : ipfsHost + ':8080') + '/ipfs', 
+		publicGateway = 'https://gateway.shiftnrg.'+(hostname == 'preview.shiftnrg.'+extension ? extension : 'org')+'/ipfs', 
+		merkleHash = 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn';
+			
+    $scope.loadFileManager = function (ipfsActive) { 
 		angular.module('FileManagerApp').config(['fileManagerConfigProvider', function (fileManagerConfigProvider) {
-		  var hostname = window.location.hostname,
-			ipfsHost = window.location.protocol + "//" + hostname, 
-			extension = hostname.substring(hostname.lastIndexOf('.')+1),
-			ipfsApi = (hostname == 'preview.shiftnrg.'+extension ? 'https://api.shiftnrg.'+extension : ipfsHost + ':5001') + '/api/v0', 
-			ipfsGateway = (hostname == 'preview.shiftnrg.'+extension ? 'https://gateway.shiftnrg.'+extension : ipfsHost + ':8080') + '/ipfs', 
-			publicGateway = 'https://gateway.shiftnrg.'+(hostname == 'preview.shiftnrg.'+extension ? extension : 'org')+'/ipfs', 
-			merkleHash = 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn',  
-			defaults = fileManagerConfigProvider.$get();
-	  
+													   
+		  var defaults = fileManagerConfigProvider.$get();
+
 		  fileManagerConfigProvider.set({
 			appName: 'IPFS filemanager',
 			defaultLang: $scope.selectedLang,
 			breadcrumb: true,
 			tplPath: path+'/filemanager/src/templates',
 			resolvePath: false && hostname == 'preview.shiftnrg.org' ? 1 : 2, // 0 = ipfs, 1 = ipns, 2 = key 
-			rootPath: merkleHash,
+			rootPath: ipfsActive ? merkleHash : null,
 			hideDate: true,
 			hidePermissions: true,
 			gatewayUrl: publicGateway,
@@ -108,8 +123,8 @@ liskApp.cp.register('dapprunController', ['$scope', '$rootScope', "userService",
 			removeUrl: ipfsApi+'/object/patch/rm-link?arg=',
 			moveUrl: ipfsApi+'/object/patch/add-link?arg=', 
 			renameUrl: ipfsApi+'/object/patch/add-link?arg=', 
-			editUrl: ipfsApi+'/add?arg=', 
-			uploadUrl: ipfsApi+'/add?arg=',
+			editUrl: ipfsApi+'/add?pin=false&arg=', 
+			uploadUrl: ipfsApi+'/add?pin=false&arg=',
 			keyGenUrl: ipfsApi+'/key/gen?type=ed25519&arg=',
 			keyValueUrl: ipfsApi+'/key/list?1=true&arg='+publicKey,
 			publishUrl: ipfsApi+'/name/publish?resolve=true&lifetime=336h&ttl=15m&arg=', 
@@ -129,27 +144,101 @@ liskApp.cp.register('dapprunController', ['$scope', '$rootScope', "userService",
 			  pickFiles: false,
 			  pickFolders: false
 			})
-		  });
+		  });	
+		  
 		}]);
-		
+
 		// FileManagerApp 
-		var appcontainer = document.getElementById("angularFileManager"),
+		var appcontainer = document.getElementById('angularFileManager'),
 			wrapper = angular.element('<angular-filemanager></angular-filemanager>');
 			angular.element(appcontainer).append(wrapper);
-		angular.bootstrap(wrapper, ['FileManagerApp']);
-		
+		angular.bootstrap(wrapper, ['FileManagerApp']);	
+
 		// Ready
 		$scope.loading = false;
-		$scope.view.inLoading = false;
+		$scope.view.inLoading = false;	
+	}			
+	
+	// Daemon status
+	$http.get(ipfsApi+'/version').success(function(data, status){			
+		if (status == 200) {
+			console.log('IPFS Daemon found, version:', data.Version);
+			$scope.ipfsActive = true;
+		}
+	}).catch(function() {
+		console.log('Warning: No running IPFS Daemon could be found');
+	}).finally(function(){
+		// Init
+		$scope.loadFileManager($scope.ipfsActive);	
+	});
+					
+	// Tabbed navigation
+	var activeTab = function () {	
+	  var hash = window.location.hash,
+		anchor = hash.split("#").length > 1,
+		item = hash.substring(hash.lastIndexOf('#') + 1, hash.length);
+		
+	  if (anchor && item) {
+		$timeout(function() {
+			$('ul.nav a[href="#' + item + '"]').tab('show');
+		},0);
+	  }
 	}
 	
-	// Init
-    $scope.loadFileManager();
+	var initTabs = function () {
+	  // Change tab on hashchange
+	  window.addEventListener('hashchange', function() {
+		activeTab();
+	  }, false);
+	  
+	  $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
+		document.getElementById('subnav').style.display = e.target.hash == '#home' ? 'none' : 'block';
+	  }); 
 
+	  // Change tab on load
+	  activeTab();
+	}
+	
+	initTabs();
 }]);
+
 </script>
-
-<div id="angularFileManager" ng-controller="dapprunController" data-ng-app="FileManagerApp"></div>
-
+<ul id="subnav" class="nav navbar nav-underline" style="display:none">
+	<li ng-repeat="(key, item) in view.menu" class="{{ !key ? 'active' : '' }}">
+		<a href="#{{item.state}}" data-toggle="tab">{{item.name}}</a>
+	</li>
+</ul>
+<div class="tab-content">
+  <div id="home" class="tab-pane fade in active">
+	<div id="angularFileManager" ng-controller="dapprunController" data-ng-app="FileManagerApp"></div>
+  </div>
+  <div id="delegates" class="tab-pane fade">
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h2>Delegates</h2>
+		</div>
+		<div class="panel-body">
+			Network and rewarding information will follow. First we need to take care of some sidechains syncing problems.  
+		</div>
+	</div>
+  </div>
+  <div id="dns" class="tab-pane fade">
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h2>DNS</h2>
+		</div>
+		<div class="panel-body">
+			<p>Short guide to setup IPFS records for your top level domain(s).</p>
+			<br/>
+			<p>
+				<ul>
+					<li><strong>CNAME record:</strong> example here</li>
+					<li><strong>TXT record:</strong> example here</li>
+				</ul>
+			</p>
+		</div>
+	</div>
+  </div>
+</div>
 </body>
 </html>

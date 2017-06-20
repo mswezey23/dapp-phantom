@@ -42,15 +42,17 @@
                 path: path
             };
 
-            self.inprocess = true;
-            self.error = '';
-			
 			// Init root
-			if (fileManagerConfig.rootPath != data.path && data.path === '/') {
+			if (!fileManagerConfig.rootPath) {
+				return;
+			} else if (fileManagerConfig.rootPath != data.path && data.path === '/') {
 				data.path = fileManagerConfig.rootPath;
 			} else {
 				data.path = fileManagerConfig.rootPath+data.path;
 			}
+
+            self.inprocess = true;
+            self.error = '';				
 			
 //			console.log('list: ', apiUrl, 'list: ', data.path);		
 			$http.get(apiUrl+data.path).success(function(json, code) {

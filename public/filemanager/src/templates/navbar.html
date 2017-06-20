@@ -1,13 +1,17 @@
 	<div class="navbar navbar-inverse"><!--
-	<nav class="navbar navbar-inverse">
+									
     <div class="container-fluid">
         <div class="row"> //-->
             <div class="col-sm-7 col-md-7 hidden-xs">
                 <div ng-show="!config.breadcrumb">
-                    <a class="navbar-brand hidden-xs ng-binding" href="">angular-filemanager</a>
+                    <a class="navbar-brand hidden-xs ng-binding" href="">{{ config.appName }}</a>																																   
                 </div>
-                <div ng-include="config.tplPath + '/current-folder-breadcrumb.html'" ng-show="config.breadcrumb" class="panel-heading">
-                </div>
+				<div class="navbar-status">
+					<a href="" ng-click="fileNavigator.goTo(-1)" class="btn btn-flat btn-sm">
+						<div id="ipfs-status" title="IPFS {{!ipfsPeers ? 'disconnected' : 'connected'}}" ng-class="!ipfsPeers ? 'inactive' : 'active'"><span class="label label-pill label-danger" title="{{ipfsPeers}} peers">{{!ipfsPeers ? 0 : (ipfsPeers > 999 ? '999+' : ipfsPeers)}}</span></div>
+					</a>
+				</div>
+                <div id="breadcrumbs" ng-include="config.tplPath + '/current-folder-breadcrumb.html'" ng-show="config.breadcrumb"></div>
             </div>
             <div class="col-sm-5 col-md-5">
                 <div class="navbar-collapse">
@@ -89,6 +93,6 @@
                 </div>
             </div>
         </div><!--
-    </div>
-</nav> //-->
+    </div> //-->
+</div>
 <div class="row clearfix margin"></div>

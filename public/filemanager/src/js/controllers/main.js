@@ -2,8 +2,8 @@
     'use strict';
 	
     angular.module('FileManagerApp').controller('FileManagerCtrl', [
-        '$scope', '$rootScope', '$window', '$translate', 'fileManagerConfig', 'item', 'fileNavigator', 'apiMiddleware',
-        function($scope, $rootScope, $window, $translate, fileManagerConfig, Item, FileNavigator, ApiMiddleware) {
+        '$scope', '$rootScope', '$window', '$translate', '$http', 'fileManagerConfig', 'item', 'fileNavigator', 'apiMiddleware',
+        function($scope, $rootScope, $window, $translate, $http, fileManagerConfig, Item, FileNavigator, ApiMiddleware) {
 		
         var $storage = $window.localStorage;
         $scope.config = fileManagerConfig;
@@ -530,15 +530,25 @@
         };
 
         $scope.changeLanguage(getQueryParam('lang'));
-        $scope.isWindows = getQueryParam('server') === 'Windows';
+        $scope.isWindows = getQueryParam('server') === 'Windows';		
 		
-		// Key or IPFS or IPNS?
-		if ($scope.config.resolvePath == 1) {
-			$scope.resolve($scope.config.rootPath);
-		} else if ($scope.config.resolvePath == 2) {
-			$scope.resolve($scope.config.publicKey);
-        } else {
-			$scope.fileNavigator.refresh();
-		}
+		// Key, IPFS or IPNS?
+		var ipfsActive = fileManagerConfig.rootPath ? true : false;
+		if (ipfsActive) {
+			if ($scope.config.resolvePath == 1) {
+				$scope.resolve($scope.config.rootPath);
+			} else if ($scope.config.resolvePath == 2) {
+				$scope.resolve($scope.config.publicKey);
+			} else {
+				$scope.fileNavigator.refresh();
+			}
+		
+			$scope.ipfsPeers = 0;	
+			$http.get(fileManagerConfig.listUrl.substring(0, fileManagerConfig.listUrl.lastIndexOf('/'))+'/swarm/peers').then(function(res){
+				if (res.status == 200) {
+					$scope.ipfsPeers = res.data.Peers.length;
+				}
+			});	
+		} 
     }]);
 })(angular, jQuery);
