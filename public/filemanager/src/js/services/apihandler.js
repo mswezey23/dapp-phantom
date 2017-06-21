@@ -1,7 +1,7 @@
 (function(angular, $) {
     'use strict';
-    angular.module('FileManagerApp').service('apiHandler', ['$http', '$q', '$window', '$translate', 'Upload', '$document', 'fileManagerConfig', 
-        function ($http, $q, $window, $translate, Upload, $document, fileManagerConfig) {
+    angular.module('FileManagerApp').service('apiHandler', ['$http', '$q', '$window', '$translate', 'Upload', '$document', 'fileManagerConfig', '$timeout', 
+        function ($http, $q, $window, $translate, Upload, $document, fileManagerConfig, $timeout) {
 
 //		$http.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
@@ -9,6 +9,7 @@
             this.inprocess = false;
             this.asyncSuccess = false;
             this.error = '';
+			this.status = '';
         };
 
         ApiHandler.prototype.deferredHandler = function(data, deferred, code, defaultMsg) {
@@ -41,7 +42,7 @@
                 action: 'list',
                 path: path
             };
-
+						
 			// Init root
 			if (!fileManagerConfig.rootPath) {
 				return;
@@ -52,7 +53,7 @@
 			}
 
             self.inprocess = true;
-            self.error = '';				
+            self.error = '';
 			
 //			console.log('list: ', apiUrl, 'list: ', data.path);		
 			$http.get(apiUrl+data.path).success(function(json, code) {
@@ -399,22 +400,32 @@
 
             var deferred = $q.defer();
             self.inprocess = true;
-
+			self.status = {title: 'Publishing', text: 'please wait.. '};
+			
 			self.keyValue(fileManagerConfig.keyValueUrl, fileManagerConfig.publicKey).then(function(key){
-//				if (key) console.log('key already exists:', key);
+				if (key) {
+//					console.log('key already exists:', key);
+					self.status.text+= 'private key found (1/2)';
+				}
 			}).catch(function() {
 				return $http.get(fileManagerConfig.keyGenUrl + fileManagerConfig.publicKey).success(function(data) {
 //					console.log('key generated: ', data.Id, data.Name);
+					self.status.text+= 'private key generated (1/2)';
 				});
 			}).finally(function() {
 //				console.log('ready to publish');			
 				$http.get(apiUrl + fileManagerConfig.rootPath + '&key=' + fileManagerConfig.publicKey).success(function(data) {
-//					console.log('published data', data.Name);
+					console.log('Data published', data.Name);
+					self.status.text = 'Data published: '+ data.Name + ' (2/2)';
 					data = {"result": data};
 					deferred.resolve(data);
 				}).error(function(data, code) {
+					self.status.text = 'Error while publishing (2/2)';
 					self.deferredHandler(data, deferred, code, $translate.instant('error_publishing'));
 				})['finally'](function() {
+					$timeout(function() {
+						self.status = '';
+					}, 5000);
 					self.inprocess = false;
 				});
 			});
@@ -431,16 +442,23 @@
             var path = false;
 			var key = false;
 			var deferred = $q.defer();
-            self.inprocess = true;
+            
+			self.inprocess = true;
+			self.status = {title: 'Resolving', text: 'please wait.. '};
 
-			var resolveName = function(name) {
+			var resolveName = function(name) {				
 //				console.log('try to resolve name: ', name);
+
 				return $http.get(apiUrl + name).success(function(data) {
+					self.status.text+= 'data successfully resolved';					
 					path = data.Path.substring(data.Path.lastIndexOf('/')+1);
 					fileManagerConfig.rootPath = path;
 				}).error(function(data, code) {
 					self.deferredHandler(data, deferred, code, $translate.instant('error_resolving'));
 				})['finally'](function() {
+					$timeout(function() {
+						self.status = '';
+					}, 3000);					
 					deferred.resolve(path);
 					self.inprocess = false;	
 				});	
@@ -448,13 +466,17 @@
 			
 			if (!name) {
 				self.inprocess = false;	
+				self.status = '';
 			} else if (name.length == 64) {
 //				console.log('try to resolve key: ', name);
 				self.keyValue(fileManagerConfig.keyValueUrl, name).then(function(result){
 					key = result;
 					if (key) name = key;
 				}).finally(function() {
-					if (!key && fileManagerConfig.resolvePath != 1) return deferred.reject();
+					if (!key && fileManagerConfig.resolvePath != 1) {
+						self.status = '';	
+						return deferred.reject();
+					}
 					resolveName(name);
 				});
 			} else {

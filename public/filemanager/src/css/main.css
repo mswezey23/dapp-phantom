@@ -74,9 +74,16 @@ a:hover, .panel-default table td a:hover, .panel-default table td a:active, .pan
   line-height: 100%;
 }
 
+.statusBar {
+	z-index: 9;
+	min-width: 250px;
+	position: absolute;
+	margin: -50px auto auto 100px;
+}
+
 #ipfs-status {
   width: 36px; height: 36px;
-  background: #fff url(/images/ipfs-logo-vector-black-outline.svg) no-repeat center center;
+  background: #fff url(../../img/ipfs-logo-vector-black-outline.svg) no-repeat center center;
   background-size: 22px 22px;
   border: 2px solid #aaa;
   border-radius: 50%;

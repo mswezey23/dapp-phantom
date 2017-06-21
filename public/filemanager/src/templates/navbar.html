@@ -1,5 +1,4 @@
-	<div class="navbar navbar-inverse"><!--
-									
+<div class="navbar navbar-inverse"><!--
     <div class="container-fluid">
         <div class="row"> //-->
             <div class="col-sm-7 col-md-7 hidden-xs">
@@ -10,6 +9,10 @@
 					<a href="" ng-click="fileNavigator.goTo(-1)" class="btn btn-flat btn-sm">
 						<div id="ipfs-status" title="IPFS {{!ipfsPeers ? 'disconnected' : 'connected'}}" ng-class="!ipfsPeers ? 'inactive' : 'active'"><span class="label label-pill label-danger" title="{{ipfsPeers}} peers">{{!ipfsPeers ? 0 : (ipfsPeers > 999 ? '999+' : ipfsPeers)}}</span></div>
 					</a>
+					<div class="alert alert-warning alert-dismissable statusBar animated fade in" ng-class="apiMiddleware.apiHandler.status ? 'fadeInDown' : 'fadeOutUp'">
+						<a href="" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+						<strong>{{apiMiddleware.apiHandler.status.title}}</strong> {{apiMiddleware.apiHandler.status.text}}
+					</div>
 				</div>
                 <div id="breadcrumbs" ng-include="config.tplPath + '/current-folder-breadcrumb.html'" ng-show="config.breadcrumb"></div>
             </div>
