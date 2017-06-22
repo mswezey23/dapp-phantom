@@ -31,6 +31,13 @@
             }
             $scope.temp.revert();
         });
+		
+        $scope.$watch('config.rootPath', function(newValue, oldValue) {
+			var scope = angular.element('div[ng-controller="appController"]').scope(); // liskApp
+			scope.$apply(function(){
+				scope.rootPath = newValue;
+			});
+        });		
 
         $scope.fileNavigator.onRefresh = function() {
             $scope.temps = [];

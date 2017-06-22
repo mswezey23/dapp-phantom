@@ -97,19 +97,19 @@ liskApp.cp.register('dapprunController', ['$scope', '$rootScope', "userService",
 		ipfsApi = (hostname == 'preview.shiftnrg.'+extension ? 'https://api.shiftnrg.'+extension : ipfsHost + ':5001') + '/api/v0', 
 		ipfsGateway = (hostname == 'preview.shiftnrg.'+extension ? 'https://gateway.shiftnrg.'+extension : ipfsHost + ':8080') + '/ipfs', 
 		publicGateway = 'https://gateway.shiftnrg.'+(hostname == 'preview.shiftnrg.'+extension ? extension : 'org')+'/ipfs', 
-		merkleHash = 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn';
+		merkleHash = $rootScope.rootPath || 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn';
 			
     $scope.loadFileManager = function (ipfsActive) { 
 		angular.module('FileManagerApp').config(['fileManagerConfigProvider', function (fileManagerConfigProvider) {
 													   
 		  var defaults = fileManagerConfigProvider.$get();
 
-		  fileManagerConfigProvider.set({
+		  $scope.fileManagerConfigProvider = {
 			appName: 'IPFS filemanager',
 			defaultLang: $scope.selectedLang,
 			breadcrumb: true,
 			tplPath: path+'/filemanager/src/templates',
-			resolvePath: false && hostname == 'preview.shiftnrg.org' ? 1 : 2, // 0 = ipfs, 1 = ipns, 2 = key 
+			resolvePath: false && hostname == 'preview.shiftnrg.org' ? 1 : $rootScope.rootPath ? 0 : 2, // 0 = ipfs, 1 = ipns, 2 = key 
 			rootPath: ipfsActive ? merkleHash : null,
 			hideDate: true,
 			hidePermissions: true,
@@ -144,14 +144,15 @@ liskApp.cp.register('dapprunController', ['$scope', '$rootScope', "userService",
 			  pickFiles: false,
 			  pickFolders: false
 			})
-		  });	
+		  };	
 		  
+		  fileManagerConfigProvider.set($scope.fileManagerConfig);
 		}]);
 
 		// FileManagerApp 
 		var appcontainer = document.getElementById('angularFileManager'),
 			wrapper = angular.element('<angular-filemanager></angular-filemanager>');
-			angular.element(appcontainer).append(wrapper);
+		angular.element(appcontainer).append(wrapper);
 		angular.bootstrap(wrapper, ['FileManagerApp']);	
 
 		// Ready
@@ -159,7 +160,7 @@ liskApp.cp.register('dapprunController', ['$scope', '$rootScope', "userService",
 		$scope.view.inLoading = false;	
 	}			
 	
-	// Daemon status
+	// Daemon status indicator
 	$http.get(ipfsApi+'/version').success(function(data, status){			
 		if (status == 200) {
 			console.log('IPFS Daemon found, version:', data.Version);
