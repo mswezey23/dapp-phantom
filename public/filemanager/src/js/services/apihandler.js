@@ -9,7 +9,7 @@
             this.inprocess = false;
             this.asyncSuccess = false;
             this.error = '';
-			this.status = '';
+			this.status = false;
         };
 
         ApiHandler.prototype.deferredHandler = function(data, deferred, code, defaultMsg) {
@@ -424,8 +424,8 @@
 					self.deferredHandler(data, deferred, code, $translate.instant('error_publishing'));
 				})['finally'](function() {
 					$timeout(function() {
-						self.status = '';
-					}, 5000);
+						self.status = false;
+					}, 9000);
 					self.inprocess = false;
 				});
 			});
@@ -457,7 +457,7 @@
 					self.deferredHandler(data, deferred, code, $translate.instant('error_resolving'));
 				})['finally'](function() {
 					$timeout(function() {
-						self.status = '';
+						self.status = false;
 					}, 3000);					
 					deferred.resolve(path);
 					self.inprocess = false;	
@@ -466,7 +466,7 @@
 			
 			if (!name) {
 				self.inprocess = false;	
-				self.status = '';
+				self.status = false;
 			} else if (name.length == 64) {
 //				console.log('try to resolve key: ', name);
 				self.keyValue(fileManagerConfig.keyValueUrl, name).then(function(result){
@@ -474,7 +474,7 @@
 					if (key) name = key;
 				}).finally(function() {
 					if (!key && fileManagerConfig.resolvePath != 1) {
-						self.status = '';	
+						self.status = false;	
 						return deferred.reject();
 					}
 					resolveName(name);

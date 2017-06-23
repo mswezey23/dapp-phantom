@@ -166,8 +166,15 @@ liskApp.cp.register('dapprunController', ['$scope', '$rootScope', "userService",
 			console.log('IPFS Daemon found, version:', data.Version);
 			$scope.ipfsActive = true;
 		}
-	}).catch(function() {
-		console.log('Warning: No running IPFS Daemon could be found');
+	}).catch(function(data) {
+		var text = 'No running IPFS Daemon could be found, or access to the API is forbidden. Whitelist '+ipfsHost+':'+window.location.port+' in IPFS config or access this node by IP';
+		console.log(data.status, text);
+		$timeout(function() {	
+			var scope = angular.element('div[ng-controller="FileManagerCtrl"]').scope();
+			scope.$apply(function(){
+				scope.apiMiddleware.apiHandler.status = {title: 'Warning', text: text};
+			});	
+		}, 0);
 	}).finally(function(){
 		// Init
 		$scope.loadFileManager($scope.ipfsActive);	
