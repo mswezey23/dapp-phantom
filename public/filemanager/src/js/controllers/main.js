@@ -54,11 +54,15 @@
 			var name = $scope.merkleRoot;
 			var merkle; 
 			
+			var validHash = function(val){
+				return val.substr(0,2) == 'Qm' && val.length == 46;
+			}
+			
 			var validDomain = function(val){
 				return (/^[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/.test(val));
 			}
 
-			if (!validDomain(name) && !(name.substr(0,2) == 'Qm' && name.length == 46)) return;
+			if (!validDomain(name) && !validHash(name)) return;
 
             $scope.apiMiddleware.resolve(name).then(function(data) {
 				merkle = data; // IPNS / Domain -> IPFS
@@ -67,9 +71,11 @@
 			}).finally(function() {
 				$scope.merkleRoot = '';
 				$scope.fileNavigator.currentPath = [];
-
-				$scope.config.rootPath = merkle;
-				$scope.fileNavigator.refresh();
+				
+				if (validHash(merkle)) {
+					$scope.config.rootPath = merkle;
+					$scope.fileNavigator.refresh();
+				}
 			});
         };
 

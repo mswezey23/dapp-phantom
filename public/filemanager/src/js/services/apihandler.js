@@ -450,15 +450,16 @@
 //				console.log('try to resolve name: ', name);
 
 				return $http.get(apiUrl + name).success(function(data) {
-					self.status.text+= 'data successfully resolved';					
+					if (self.status) self.status.text = 'data successfully resolved';					
 					path = data.Path.substring(data.Path.lastIndexOf('/')+1);
 					fileManagerConfig.rootPath = path;
 				}).error(function(data, code) {
+					if (self.status) self.status.text = data.Message;
 					self.deferredHandler(data, deferred, code, $translate.instant('error_resolving'));
 				})['finally'](function() {
 					$timeout(function() {
 						self.status = false;
-					}, 3000);					
+					}, 3000);
 					deferred.resolve(path);
 					self.inprocess = false;	
 				});	
