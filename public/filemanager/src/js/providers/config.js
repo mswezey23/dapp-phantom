@@ -12,6 +12,7 @@
 			keyGenUrl: '',
 			keyValueUrl: '',
 			publicKey: 'self',
+			publishHash: '',
 			
             listUrl: 'bridges/php/handler.php',
             uploadUrl: 'bridges/php/handler.php',

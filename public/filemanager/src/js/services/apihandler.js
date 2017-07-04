@@ -417,6 +417,7 @@
 				$http.get(apiUrl + fileManagerConfig.rootPath + '&key=' + fileManagerConfig.publicKey).success(function(data) {
 					console.log('Data published', data.Name);
 					self.status.text = 'Data published: '+ data.Name + ' (2/2)';
+					fileManagerConfig.publishHash = data.Name;
 					data = {"result": data};
 					deferred.resolve(data);
 				}).error(function(data, code) {
@@ -472,7 +473,9 @@
 //				console.log('try to resolve key: ', name);
 				self.keyValue(fileManagerConfig.keyValueUrl, name).then(function(result){
 					key = result;
-					if (key) name = key;
+					if (key) {
+						name = key;
+						fileManagerConfig.publishHash = name;
 				}).finally(function() {
 					if (!key && fileManagerConfig.resolvePath != 1) {
 						self.status = false;	

@@ -29,26 +29,57 @@
 	   url('./bower_components/bootstrap/fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
 }
 .glyphicon {
-  position: relative; top: 1px; display: inline-block;
-  font-family: 'Glyphicons Halflings'; font-style: normal; font-weight: normal; line-height: 1;
-  -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+	position: relative; top: 1px; display: inline-block;
+	font-family: 'Glyphicons Halflings'; font-style: normal; font-weight: normal; line-height: 1;
+	-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+}
+.loading-wrapper {
+	text-align: left;
+	line-height: 2rem;
+}
+.loading-wrapper h2 {
+	white-space:pre-wrap
 }
 </style>
 <script type="text/javascript">
 liskApp.cp.register('dapprunController', ['$scope', '$rootScope', "userService", 'viewFactory', 'gettextCatalog', '$stateParams', '$http', '$timeout', function ($rootScope, $scope, userService, viewFactory, gettextCatalog, $stateParams, $http, $timeout) {
     $scope.view = viewFactory;
-    $scope.view.inLoading = true;
-    $scope.view.loadingText = gettextCatalog.getString('Loading IPFS');
     $scope.view.bar = {};
     $scope.view.menu = [
-		{name: 'IPFS Filemanager', state: 'home', icon: 'dashboard-icon'}, 
-		{name: 'Delegates', state: 'delegates', icon: 'delegates-icon'},
-		{name: 'DNS', state: 'dns', icon: 'myvotes-icon'}
+		{name: 'IPFS Filemanager', state: 'files', icon: 'dashboard-icon'}, 
+		{name: 'DNS', state: 'dns', icon: 'myvotes-icon'},
+		{name: 'Delegates', state: 'delegates', icon: 'delegates-icon'}
     ];
     $scope.showMore = false;
     $scope.address = userService.address;
-    $scope.loading = true;
 	$scope.ipfsActive = false;
+	$scope.publishHash = '';
+	
+	$scope.submitResult = function(result) {
+		console.log(result);
+	};	
+		
+	$scope.parseUri = function(uri) {
+		var field = field || 'hostname', 
+			parser = parser || document.createElement('a');
+			
+		parser.href = uri;
+
+		return parser[field];
+	};
+	
+	$scope.verifyIp = function(ip) {
+		return /^(([1-9]?\d|1\d\d|2[0-4]\d|25[0-5])(\.(?!$)|(?=$))){4}$/.test(ip||"");
+	}
+	
+	$scope.loadingState = function(text, ready, clear) {
+		var content = !clear ? [$scope.view.loadingText].concat(text) : [$scope.view.loadingText];
+		
+		$scope.loading = !ready;	
+		$scope.view.inLoading = !ready;
+		$scope.view.loadingText = content.join("\n\r");
+	}
+	$scope.loadingState('Loading Phantom dApp', false, true);
 	
 	// Dynamic 'lazy' loading
 	var path = './dapps/'+$stateParams.dappId;
@@ -88,7 +119,7 @@ liskApp.cp.register('dapprunController', ['$scope', '$rootScope', "userService",
 		nacl_instance = nacl;
 	});
 	var keypair = nacl_instance.crypto_sign_seed_keypair(hash);
-	publicKey = new Multihashing.Buffer(keypair.signPk).toString("hex");	
+	publicKey = new Multihashing.Buffer(keypair.signPk).toString("hex");
 	
 	/* Angular-filemanager config */
 	var hostname = window.location.hostname,
@@ -98,10 +129,17 @@ liskApp.cp.register('dapprunController', ['$scope', '$rootScope', "userService",
 		ipfsGateway = (hostname == 'preview.shiftnrg.'+extension ? 'https://gateway.shiftnrg.'+extension : ipfsHost + ':8080') + '/ipfs', 
 		publicGateway = 'https://gateway.shiftnrg.'+(hostname == 'preview.shiftnrg.'+extension ? extension : 'org')+'/ipfs', 
 		merkleHash = $rootScope.rootPath || 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn';
-			
+		
+	$scope.domainName = 'ipfspage.com';
+	$scope.serverData = {
+		'hostname': hostname, 
+		'ipfsGateway': ipfsGateway, 
+		'publicGateway': $scope.parseUri(publicGateway), 
+		'isDomain': !$scope.verifyIp(hostname)
+	};
+	
     $scope.loadFileManager = function (ipfsActive) { 
 		angular.module('FileManagerApp').config(['fileManagerConfigProvider', function (fileManagerConfigProvider) {
-													   
 		  var defaults = fileManagerConfigProvider.$get();
 
 		  $scope.fileManagerConfig = {
@@ -111,6 +149,7 @@ liskApp.cp.register('dapprunController', ['$scope', '$rootScope', "userService",
 			tplPath: path+'/filemanager/src/templates',
 			resolvePath: false && hostname == 'preview.shiftnrg.org' ? 1 : $rootScope.rootPath ? 0 : 2, // 0 = ipfs, 1 = ipns, 2 = key 
 			rootPath: ipfsActive ? merkleHash : null,
+			publishHash: $rootScope.publishHash,
 			hideDate: true,
 			hidePermissions: true,
 			gatewayUrl: publicGateway,
@@ -144,8 +183,8 @@ liskApp.cp.register('dapprunController', ['$scope', '$rootScope', "userService",
 			  pickFiles: false,
 			  pickFolders: false
 			})
-		  };	
-		  
+		  };
+
 		  fileManagerConfigProvider.set($scope.fileManagerConfig);
 		}]);
 
@@ -156,12 +195,11 @@ liskApp.cp.register('dapprunController', ['$scope', '$rootScope', "userService",
 		angular.bootstrap(wrapper, ['FileManagerApp']);	
 
 		// Ready
-		$scope.loading = false;
-		$scope.view.inLoading = false;	
-	}			
+		$scope.loadingState('Ready', true);
+	}
 	
 	// Daemon status indicator
-	$http.get(ipfsApi+'/version').success(function(data, status){			
+	$http.get(ipfsApi+'/version').success(function(data, status, headers, config){			
 		if (status == 200) {
 			console.log('IPFS Daemon found, version:', data.Version);
 			$scope.ipfsActive = true;
@@ -171,54 +209,159 @@ liskApp.cp.register('dapprunController', ['$scope', '$rootScope', "userService",
 		console.log(data.status, text);
 		$timeout(function() {	
 			var scope = angular.element('div[ng-controller="FileManagerCtrl"]').scope();
-			scope.$apply(function(){
-				scope.apiMiddleware.apiHandler.status = {title: 'Warning', text: text};
-			});	
+			if (scope) {
+				scope.$apply(function(){
+					scope.apiMiddleware.apiHandler.status = {title: 'Warning', text: text};
+				});	
+			}	
 		}, 0);
 	}).finally(function(){
 		// Init
 		$scope.loadFileManager($scope.ipfsActive);	
-	});
-					
+	});	
+
 	// Tabbed navigation
-	var activeTab = function () {	
+	var activeTab = function (tab) {	
 	  var hash = window.location.hash,
 		anchor = hash.split("#").length > 1,
-		item = hash.substring(hash.lastIndexOf('#') + 1, hash.length);
-		
-	  if (anchor && item) {
-		$timeout(function() {
-			$('ul.nav a[href="#' + item + '"]').tab('show');
-		},0);
+		item = tab || hash.substring(hash.lastIndexOf('#') + 1, hash.length);
+
+	  if (tab) {
+		window.location.hash = hash.substring(0, hash.lastIndexOf('#')) + tab;
+	  }
+	
+	  if (item) {
+		$('ul.nav a[href="#' + item + '"]').tab('show');
 	  }
 	}
 	
 	var initTabs = function () {
-	  // Change tab on hashchange
-	  window.addEventListener('hashchange', function() {
+	  // On hashchange
+	  window.addEventListener('hashchange', function(e) {
 		activeTab();
 	  }, false);
 	  
+	  // On change
 	  $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
-		document.getElementById('subnav').style.display = e.target.hash == '#home' ? 'none' : 'block';
+		document.getElementById('subnav').style.display = e.target.hash == '#files' ? 'none' : 'block';
 	  }); 
+	  
+	  // On click
+	  $('a[data-toggle="tab"]').on('click', function (e) {
+		e.preventDefault();
+		activeTab(e.target.hash);
+	  });
 
-	  // Change tab on load
+	  // On load
 	  activeTab();
 	}
 	
-	initTabs();
+	$timeout(function() {
+	  initTabs();
+	},0);
+	
 }]);
-
+	
 </script>
+
 <ul id="subnav" class="nav navbar nav-underline" style="display:none">
 	<li ng-repeat="(key, item) in view.menu" class="{{ !key ? 'active' : '' }}">
 		<a href="#{{item.state}}" data-toggle="tab">{{item.name}}</a>
 	</li>
 </ul>
+
 <div class="tab-content">
-  <div id="home" class="tab-pane fade in active">
+  <div id="files" class="tab-pane fade in active">
 	<div id="angularFileManager" ng-controller="dapprunController" data-ng-app="FileManagerApp"></div>
+  </div>
+  <div id="dns" class="tab-pane fade">
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h2>DNS</h2>
+		</div>		
+		<div class="panel-body">
+			<p>A short guide how to setup DNS records for your top level domain(s).</p>
+			<br/>
+			
+			<form>
+			  <div class="row" ng-init="gatewaySelection = 'node'"> 
+				<div class="btn-group" data-toggle="gatewaySelection">
+				  <label class="btn btn-default" ng-class="{'active':gatewaySelection === 'node'}">
+					<input type="radio" name="options" id="node" ng-value="'node'" autocomplete="off" ng-model="gatewaySelection" checked> This node's gateway
+				  </label>
+				  <label class="btn btn-default" ng-class="{'active':gatewaySelection === 'official'}">
+					<input type="radio" name="options" id="official" ng-value="'official'" autocomplete="off" ng-model="gatewaySelection"> Official gateway
+				  </label>
+				</div>
+			  </div>			  
+			  
+			  <div class="row">			  			  
+				<div class="input-field has-feedback has-clear col-md-6">
+					<input id="domain" type="text" class="form-control" ng-model="domainName" ng-focus="focus == 'domain'" ng-class="{'invalid': !domainName}" />
+					<label for="domain" class="active"><translate><span>Your (sub.)domain</span></translate></label>
+				</div>
+				<label type="button" class="btn btn-default btn-flat" type="button" style="margin-top:20px" ng-show="domainName" ng-click="domainName=''">
+					<i class="glyphicon glyphicon-remove"></i>
+				</label>
+			  </div>
+
+			  <div class="row">
+				<div class="col-md-2">
+					<strong>Type</strong>
+				</div>
+				<div class="col-md-3">
+					<strong>Domain Name</strong>
+				</div>
+				<div class="col-md-4">
+					<strong ng-show="gatewaySelection == 'node' && !serverData.isDomain">IP Address</strong>
+					<strong ng-show="gatewaySelection != 'node' || serverData.isDomain">Canonical Name</strong>	
+				</div>
+			  </div>
+			  <div class="row">
+				<div class="col-md-2">
+					<span ng-show="gatewaySelection == 'node' && !serverData.isDomain">A</span>
+					<span ng-show="gatewaySelection != 'node' || serverData.isDomain">CNAME</span>
+				</div>
+				<div class="col-md-3">
+					{{domainName}}
+				</div>
+				<div class="col-md-4">
+					<span ng-show="gatewaySelection == 'node'">{{serverData.hostname}}</span>
+					<span ng-show="gatewaySelection != 'node'">{{serverData.publicGateway}}</span>
+				</div>
+			  </div>
+			  
+			  <br/>
+			  
+			  <div class="row">
+				<div class="col-md-2">
+					<strong>Type</strong>
+				</div>
+				<div class="col-md-3">
+					<strong>Domain Name</strong>
+				</div>
+				<div class="col-md-6">
+					<strong>Record</strong> 
+					<span ng-show="!publishHash" class="label label-danger" title="Warning: Publish first, for mutable content">
+						<i class="glyphicon glyphicon-alert"></i> Immutable
+					</span> 
+				</div>
+			  </div>			  
+			  <div class="row">
+				<div class="col-md-2">
+					TXT
+				</div>
+				<div class="col-md-3">
+					_dnslink.{{domainName}}
+				</div>
+				<div class="col-md-6">
+					dnslink=<span ng-show="publishHash">/ipns/{{publishHash}}</span><span ng-show="!publishHash">/ipfs/{{rootPath}}</span>
+				</div>
+			  </div>
+			  
+			</form>
+		</div>
+	</div>
   </div>
   <div id="delegates" class="tab-pane fade">
 	<div class="panel panel-default">
@@ -226,27 +369,11 @@ liskApp.cp.register('dapprunController', ['$scope', '$rootScope', "userService",
 			<h2>Delegates</h2>
 		</div>
 		<div class="panel-body">
-			Network and rewarding information will follow. First we need to take care of some sidechains syncing problems.  
+			Network and rewarding information will follow.  
 		</div>
 	</div>
-  </div>
-  <div id="dns" class="tab-pane fade">
-	<div class="panel panel-default">
-		<div class="panel-heading">
-			<h2>DNS</h2>
-		</div>
-		<div class="panel-body">
-			<p>Short guide to setup IPFS records for your top level domain(s).</p>
-			<br/>
-			<p>
-				<ul>
-					<li><strong>CNAME record:</strong> example here</li>
-					<li><strong>TXT record:</strong> example here</li>
-				</ul>
-			</p>
-		</div>
-	</div>
-  </div>
+  </div>  
 </div>
+
 </body>
 </html>

@@ -32,12 +32,15 @@
             $scope.temp.revert();
         });
 		
-        $scope.$watch('config.rootPath', function(newValue, oldValue) {
-			var scope = angular.element('div[ng-controller="appController"]').scope(); // liskApp
-			scope.$apply(function(){
-				scope.rootPath = newValue;
+		var scope = angular.element('div[ng-controller="appController"]').scope(); // liskApp
+		angular.forEach(['rootPath','publishHash'], function(value) {
+			if (!scope) return;
+			$scope.$watch('config.'+value, function(newValue, oldValue) {
+				scope.$apply(function(){
+					scope[value] = newValue;
+				});
 			});
-        });		
+		});	
 
         $scope.fileNavigator.onRefresh = function() {
             $scope.temps = [];
@@ -543,7 +546,7 @@
         };
 
         $scope.changeLanguage(getQueryParam('lang'));
-        $scope.isWindows = getQueryParam('server') === 'Windows';		
+        $scope.isWindows = getQueryParam('server') === 'Windows';
 		
 		// Key, IPFS or IPNS?
 		var ipfsActive = fileManagerConfig.rootPath ? true : false;
