@@ -415,13 +415,13 @@
 			}).finally(function() {
 //				console.log('ready to publish');			
 				$http.get(apiUrl + fileManagerConfig.rootPath + '&key=' + fileManagerConfig.publicKey).success(function(data) {
-					console.log('Data published', data.Name);
-					self.status.text = 'Data published: '+ data.Name + ' (2/2)';
+					console.log('Data succcesfully published', data.Name);
+					if (self.status && data.Name) self.status.text = 'Data succcesfully published: '+ data.Name + ' (2/2)';
 					fileManagerConfig.publishHash = data.Name;
 					data = {"result": data};
 					deferred.resolve(data);
 				}).error(function(data, code) {
-					self.status.text = 'Error while publishing (2/2)';
+					if (self.status) self.status.text = 'Error while publishing';
 					self.deferredHandler(data, deferred, code, $translate.instant('error_publishing'));
 				})['finally'](function() {
 					$timeout(function() {
@@ -451,11 +451,11 @@
 //				console.log('try to resolve name: ', name);
 
 				return $http.get(apiUrl + name).success(function(data) {
-					if (self.status) self.status.text = 'data successfully resolved';					
+					if (self.status) self.status.text = 'data successfully resolved';
 					path = data.Path.substring(data.Path.lastIndexOf('/')+1);
 					fileManagerConfig.rootPath = path;
 				}).error(function(data, code) {
-					if (self.status) self.status.text = data.Message;
+					if (self.status && data && data.Message) self.status.text = data.Message;
 					self.deferredHandler(data, deferred, code, $translate.instant('error_resolving'));
 				})['finally'](function() {
 					$timeout(function() {
@@ -476,6 +476,7 @@
 					if (key) {
 						name = key;
 						fileManagerConfig.publishHash = name;
+					}
 				}).finally(function() {
 					if (!key && fileManagerConfig.resolvePath != 1) {
 						self.status = false;	
