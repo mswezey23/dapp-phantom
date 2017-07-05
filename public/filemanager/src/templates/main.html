@@ -11,15 +11,15 @@
 				<input id="merkle" style="padding-left:10px" type="text" class="form-control input-lg" ng-change="setMerkle()" ng-model="merkleRoot">
 				<label for="merkle" style="padding-left:10px"><span class="ng-scope">{{ config.rootPath }}</span></label>
               </div>
-			  <div class="input-group-btn" dropdown>
-				<div class="dropdown-more-group" id="merkleActions" dropdown-toggle>
-				  <span class="table-more-actions">
-					<span class="dots"></span>
-				  </span>
-				</div>
-				<ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="merkleActions">
+
+			  <div class="input-group-btn">
+				<button type="button" class="btn btn-sm btn-success" id="publishicon" ng-click="publish()" title="Publish"><span class="glyphicon glyphicon-send" aria-hidden="true"></span></button>
+				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				  <span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu dropdown-menu-right">
 				  <li><a href="{{ config.gatewayUrl+'/'+config.rootPath }}" target="_blank"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span> View Gateway</a></li>
-				  <li><a href="javascript:void(0)" id="publishbtn" ng-click="publish()"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> Publish</a></li>
+				  <li><a href="javascript:void(0)" id="publishbtn" ng-click="publish()"><span class="glyphicon glyphicon-send" aria-hidden="true"></span> Publish</a></li>
 				  <li role="separator" class="divider"></li>
 				  <li>
 					<a href="javascript:void(0)" clipboard data-clipboard-text="{{ config.rootPath }}" clipboard-success="clipboardSuccess(e);" clipboard-error="clipboardError(e);">
@@ -27,7 +27,7 @@
 					</a>
 				  </li>
 				</ul>
-			  </div>
+			  </div>			  
 			</div>
 		</div>
         <div class="panel-body">

@@ -343,28 +343,35 @@
         };
 		
         $scope.publish = function() {
-			var publishbtn = angular.element("#publishbtn")[0],
-				publishtext = publishbtn.innerHTML;
+			var publishbtn = angular.element("#publishbtn"),
+				publishicon = angular.element("#publishicon");
 				
-			if (publishbtn.getAttribute('disabled')) return; 
+			if (publishbtn[0].getAttribute('disabled')) return; 
+
+			var publishtext = publishbtn.html();
+			publishbtn.attr('disabled');
+			publishbtn.text('Publishing..');
+			publishbtn.parent().addClass('disabled');
 			
-			publishbtn.setAttribute('disabled', 'disabled');
-			publishbtn.innerHTML = 'Publishing..';
-			publishbtn.parentNode.className = 'disabled';
+			publishicon.attr('disabled');
+			publishicon.addClass('disabled');
 			
             $scope.apiMiddleware.publish().then(function(data) {
 				var copybtn = '<a href="javascript:void(0)" id="clipboardbtn" data-clipboard-text="" clipboard-success="clipboardSuccess(e);" clipboard-error="clipboardError(e);"><button type="button" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-copy" aria-hidden="true"></span></button></a>';
-				var publish2clipboard = new Clipboard('#clipboardbtn', {
-				  text: function(trigger) {
-					return data.result.Name; 
-				  }
+				Materialize.toast('Published: '+ data.result.Name +' '+ copybtn, 5000, 'green white-text' , function(){
+					var publish2clipboard = new Clipboard('#clipboardbtn', {
+					  text: function(trigger) {
+						return data.result.Name; 
+					  }
+					});	
 				});
 				
-				Materialize.toast('Published: '+ data.result.Name +' '+ copybtn, 5000, 'green white-text');
+				publishbtn.html(publishtext);
+				publishbtn.removeAttr('disabled');
+				publishbtn.parent().removeClass('disabled');
 				
-				publishbtn.removeAttribute('disabled');
-				publishbtn.innerHTML = publishtext;
-				publishbtn.parentNode.className = '';
+				publishicon.removeAttr('disabled');
+				publishicon.removeClass('disabled');
 			});
         };
 
