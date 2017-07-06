@@ -81,14 +81,25 @@ liskApp.cp.register('dapprunController', ['$scope', '$rootScope', "userService",
 	}
 	$scope.loadingState('Loading Phantom dApp', false, true);
 	
+	// Dapp version
+	var version = 1.0;
+	$scope.view.dapp.version = version;
+	$scope.view.dapp.latest = 0;
+	$scope.getDappVersion = function(){
+		$http.get('https://raw.githubusercontent.com/ShiftNrg/dapp-phantom/master/version.json').success(function(data){
+			$scope.view.dapp.latest = data.version;
+		});	
+	};
+	$scope.getDappVersion();
+	
 	// Dynamic 'lazy' loading
 	var path = './dapps/'+$stateParams.dappId;
-	var version = 0.12;
 	var styles = [
 		path + '/filemanager/bower_components/codemirror/lib/codemirror.css',
 		path + '/filemanager/dist/ipfs-filemanager.min.css'
 	].forEach(function(style){
-		$("<link>").attr({rel:"stylesheet", href:style+'?v='+version}).appendTo("head");
+		if (style) style+= '?v='+version;
+		$("<link>").attr({rel:"stylesheet", href:style}).appendTo("head");
 	});
 	var scripts = [
 		/* third party */
@@ -213,7 +224,7 @@ liskApp.cp.register('dapprunController', ['$scope', '$rootScope', "userService",
 				scope.$apply(function(){
 					scope.apiMiddleware.apiHandler.status = {title: 'Warning', text: text};
 				});	
-			}	
+			}
 		}, 0);
 	}).finally(function(){
 		// Init
@@ -268,6 +279,11 @@ liskApp.cp.register('dapprunController', ['$scope', '$rootScope', "userService",
 	<li ng-repeat="(key, item) in view.menu" class="{{ !key ? 'active' : '' }}">
 		<a href="#{{item.state}}" data-toggle="tab">{{item.name}}</a>
 	</li>
+	<li class="pull-right">
+		<a href="" ng-click="getDappVersion()" id="version" title="Latest version {{view.dapp.latest}}">
+			<span class="label {{view.dapp.latest > view.dapp.version ? 'label-danger' : 'label-default'}}">Version {{view.dapp.version | number: 1}}
+		</a>
+	</li>	  
 </ul>
 
 <div class="tab-content">
