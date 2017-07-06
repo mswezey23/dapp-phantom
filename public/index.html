@@ -54,12 +54,8 @@ liskApp.cp.register('dapprunController', ['$scope', '$rootScope', "userService",
     $scope.address = userService.address;
 	$scope.ipfsActive = false;
 	$scope.publishHash = '';
-	
-	$scope.submitResult = function(result) {
-		console.log(result);
-	};	
 		
-	$scope.parseUri = function(uri) {
+	$scope.parseUri = function(uri, field) {
 		var field = field || 'hostname', 
 			parser = parser || document.createElement('a');
 			
@@ -121,7 +117,7 @@ liskApp.cp.register('dapprunController', ['$scope', '$rootScope', "userService",
 		$("<script>").attr({type:"text/javascript", src:script}).appendTo("head");
 	});	
 
-	/* Create extra public SHIFT keypair to lookup & publish to IPNS */
+	/* Create extra SHIFT keypair to lookup & publish to IPNS */
 	var publicKey = '';	
 	var salt = userService.address + ' self ' + userService.rememberedPassphrase;
 	var hash = Multihashing.createHash('sha2-256').update(salt, 'utf8').digest();
