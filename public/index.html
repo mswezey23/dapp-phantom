@@ -78,7 +78,7 @@ liskApp.cp.register('dapprunController', ['$scope', '$rootScope', "userService",
 	$scope.loadingState('Loading Phantom dApp', false, true);
 	
 	// Dapp version
-	var version = 1.0;
+	var version = 1.1;
 	$scope.view.dapp.version = version;
 	$scope.view.dapp.latest = 0;
 	$scope.getDappVersion = function(){
@@ -130,10 +130,11 @@ liskApp.cp.register('dapprunController', ['$scope', '$rootScope', "userService",
 	
 	/* Angular-filemanager config */
 	var hostname = window.location.hostname,
-		ipfsHost = window.location.protocol + "//" + hostname, 
-		extension = hostname.substring(hostname.lastIndexOf('.')+1),
-		ipfsApi = (hostname == 'preview.shiftnrg.'+extension ? 'https://api.shiftnrg.'+extension : ipfsHost + ':5001') + '/api/v0', 
-		ipfsGateway = (hostname == 'preview.shiftnrg.'+extension ? 'https://gateway.shiftnrg.'+extension : ipfsHost + ':8080') + '/ipfs', 
+		ipfsPort = window.location.protocol.indexOf('https') != -1 ? 5002 : 5001,
+		extension = hostname.substring(hostname.lastIndexOf('.') + 1),
+		ipfsHost = (hostname == 'preview.shiftnrg.'+extension ? 'https://api.shiftnrg.'+extension : window.location.protocol + "//" + hostname + ':' + ipfsPort), 
+		ipfsApi = ipfsHost + '/api/v0',
+		ipfsGateway = (hostname == 'preview.shiftnrg.'+extension ? 'https://gateway.shiftnrg.'+extension : 'http://' + hostname + ':8080') + '/ipfs', 
 		publicGateway = 'https://gateway.shiftnrg.'+(hostname == 'preview.shiftnrg.'+extension ? extension : 'org')+'/ipfs', 
 		merkleHash = $rootScope.rootPath || 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn';
 		
@@ -154,12 +155,12 @@ liskApp.cp.register('dapprunController', ['$scope', '$rootScope', "userService",
 			defaultLang: $scope.selectedLang,
 			breadcrumb: true,
 			tplPath: path+'/filemanager/src/templates',
-			resolvePath: false && hostname == 'preview.shiftnrg.org' ? 1 : $rootScope.rootPath ? 0 : 2, // 0 = ipfs, 1 = ipns, 2 = key 
+			resolvePath: false && hostname == 'preview.shiftnrg.'+extension ? 1 : $rootScope.rootPath ? 0 : 2, // 0 = ipfs, 1 = ipns, 2 = key 
 			rootPath: ipfsActive ? merkleHash : null,
 			publishHash: $rootScope.publishHash,
 			hideDate: true,
 			hidePermissions: true,
-			gatewayUrl: publicGateway,
+			gatewayUrl: hostname == 'preview.shiftnrg.'+extension ? publicGateway : ipfsGateway,
 			publicKey: publicKey,
 			listUrl: ipfsApi+'/ls?headers=false&resolve-type=true&arg=',
 			getContentUrl: ipfsApi+'/cat?arg=',
