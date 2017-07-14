@@ -206,27 +206,30 @@ liskApp.cp.register('dapprunController', ['$scope', '$rootScope', "userService",
 		$scope.loadingState('Ready', true);
 	}
 	
-	// Daemon status indicator
-	$http.get(ipfsApi+'/version').success(function(data, status, headers, config){			
-		if (status == 200) {
-			console.log('IPFS Daemon found, version:', data.Version);
-			$scope.ipfsActive = true;
-		}
-	}).catch(function(data) {
-		var text = 'No running IPFS Daemon could be found, or access to the API is forbidden. Whitelist ' + window.location.protocol + "//" + hostname + ':' + window.location.port +' in IPFS config or access this node by IP';
-		console.log(data.status, text);
-		$timeout(function() {	
-			var scope = angular.element('div[ng-controller="FileManagerCtrl"]').scope();
-			if (scope) {
-				scope.$apply(function(){
-					scope.apiMiddleware.apiHandler.status = {title: 'Warning', text: text};
-				});	
+	// Lookup IPFS Daemon
+	$scope.initIPFS = function(){
+		$http.get(ipfsApi+'/version').success(function(data, status, headers, config){			
+			if (status == 200) {
+				console.log('IPFS Daemon found, version:', data.Version);
+				$scope.ipfsActive = true;
 			}
-		}, 0);
-	}).finally(function(){
-		// Init
-		$scope.loadFileManager($scope.ipfsActive);	
-	});	
+		}).catch(function(data) {
+			var text = 'No running IPFS Daemon could be found, or access to the API is forbidden. Whitelist ' + window.location.protocol + "//" + hostname + ':' + window.location.port +' in IPFS config or access this node by IP';
+			console.log(data.status, text);
+			$timeout(function() {	
+				var scope = angular.element('div[ng-controller="FileManagerCtrl"]').scope();
+				if (scope) {
+					scope.$apply(function(){
+						scope.apiMiddleware.apiHandler.status = {title: 'Warning', text: text};
+					});	
+				}
+			}, 0);
+		}).finally(function(){
+			// Init
+			$scope.loadFileManager($scope.ipfsActive);	
+		});	
+	}
+	$scope.initIPFS();	
 
 	// Tabbed navigation
 	var activeTab = function (tab) {	

@@ -6,14 +6,13 @@
 			<div class="input-group">
 			  <span class="input-group-addon">Merkle root</span>
 			  <span class="input-group-addon">#</span>
-<!--		  <input id="merkle" style="margin-top:12px; padding-left:8px" type="text" placeholder="{{ config.rootPath }}" class="form-control input-lg" ng-change="setMerkle()" ng-model="merkleRoot">
-//-->		  <div class="input-field">
+			  <div class="input-field">
 				<input id="merkle" style="padding-left:10px" type="text" class="form-control input-lg" ng-change="setMerkle()" ng-model="merkleRoot">
 				<label for="merkle" style="padding-left:10px"><span class="ng-scope">{{ config.rootPath }}</span></label>
               </div>
 
 			  <div class="input-group-btn">
-				<button type="button" class="btn btn-sm btn-success" id="publishicon" ng-click="publish()" title="Publish"><span class="glyphicon glyphicon-send" aria-hidden="true"></span></button>
+				<button type="button" class="btn btn-sm {{!ipfsPeers ? 'btn-default disabled' : 'btn-success'}}" id="publishicon" ng-click="publish()" title="Publish"><span class="glyphicon glyphicon-send" aria-hidden="true"></span></button>
 				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 				  <span class="caret"></span>
 				</button>

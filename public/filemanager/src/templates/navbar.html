@@ -6,7 +6,7 @@
                     <a class="navbar-brand hidden-xs ng-binding" href="">{{ config.appName }}</a>																																   
                 </div>
 				<div class="navbar-status">
-					<a href="" ng-click="fileNavigator.goTo(-1)" class="btn btn-flat btn-sm">
+					<a href="" ng-click="ipfsPeers && fileNavigator.goTo(-1)" class="btn btn-flat btn-sm">
 						<div id="ipfs-status" title="IPFS {{!ipfsPeers ? 'disconnected' : 'connected'}}" ng-class="!ipfsPeers ? 'inactive' : 'active'"><span class="label label-pill label-danger" title="{{ipfsPeers}} peers">{{!ipfsPeers ? 0 : (ipfsPeers > 999 ? '999+' : ipfsPeers)}}</span></div>
 					</a>
 					<div class="alert alert-warning alert-dismissable statusBar animated fade in" ng-class="apiMiddleware.apiHandler.status ? 'fadeInDown' : 'fadeOutUp'">
