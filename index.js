@@ -13,7 +13,7 @@ var ready = false;
 
 var logger  = new Logger({echo: config.consoleLogLevel, errorLevel: config.fileLogLevel, filename:config.filename, append: false});
 
-// SSL reverse proxy
+/* SSL reverse proxy (disabled: handled by HAProxy now)
 var rootConfig = require('../../config.json');
 if (rootConfig.ssl.enabled) {
 	var fs = require('fs');
@@ -29,7 +29,7 @@ if (rootConfig.ssl.enabled) {
 		ciphers: 'ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:' + 'ECDHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA256:ECDHE-RSA-AES256-SHA384:DHE-RSA-AES256-SHA384:ECDHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA256:HIGH:' + '!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!SRP:!CAMELLIA'
 	  }
 	}).listen(5002);
-}
+}*/
 
 process.on("uncaughtException", function (err) {
 	logger.fatal("Dapp system error", {message: err.message, stack: err.stack});

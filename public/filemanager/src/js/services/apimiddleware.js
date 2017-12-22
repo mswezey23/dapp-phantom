@@ -77,6 +77,10 @@
             return this.apiHandler.keyValue(fileManagerConfig.keyValueUrl, key);
         };
 
+        ApiMiddleware.prototype.pin = function() {
+            return this.apiHandler.pin(fileManagerConfig.pinUrl);
+        };
+		
         ApiMiddleware.prototype.publish = function() {
             return this.apiHandler.publish(fileManagerConfig.publishUrl);
         };

@@ -12,12 +12,15 @@
               </div>
 
 			  <div class="input-group-btn">
-				<button type="button" class="btn btn-sm {{!ipfsPeers ? 'btn-default disabled' : 'btn-success'}}" id="publishicon" ng-click="publish()" title="Publish"><span class="glyphicon glyphicon-send" aria-hidden="true"></span></button>
+				<button type="button" class="btn btn-sm {{!ipfsPeers ? 'btn-default disabled' : 'btn-default'}}" id="pinicon" ng-click="pin()" title="Pin"><span class="glyphicon glyphicon-pushpin" aria-hidden="true"></span></button>
+				<button type="button" class="btn btn-sm {{!ipfsPeers || config.pinHash!=config.rootPath ? 'btn-default disabled' : 'btn-success'}}" id="publishicon" ng-click="publish()" title="Publish"><span class="glyphicon glyphicon-send" aria-hidden="true"></span></button>
 				<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 				  <span class="caret"></span>
 				</button>
 				<ul class="dropdown-menu dropdown-menu-right">
-				  <li><a href="{{ config.gatewayUrl+'/'+config.rootPath }}" target="_blank"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span> View Gateway</a></li>
+				  <li><a href="{{ config.gatewayUrl.ipfs+'/'+config.rootPath }}" target="_blank"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span> Peer Gateway</a></li>
+				  <li><a href="{{ config.gatewayUrl.public+'/'+config.rootPath }}" target="_blank"><span class="glyphicon glyphicon-new-window" aria-hidden="true" {{config.pinHash!=config.rootPath ? ' disabled' : ''}}></span> Cluster Gateway</a></li>
+				  <li><a href="javascript:void(0)" id="pinbtn" ng-click="pin()"><span class="glyphicon glyphicon-pushpin" aria-hidden="true"></span> Pin</a></li>
 				  <li><a href="javascript:void(0)" id="publishbtn" ng-click="publish()"><span class="glyphicon glyphicon-send" aria-hidden="true"></span> Publish</a></li>
 				  <li role="separator" class="divider"></li>
 				  <li>
