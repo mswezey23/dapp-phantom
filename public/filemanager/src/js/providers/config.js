@@ -3,10 +3,14 @@
     angular.module('FileManagerApp').provider('fileManagerConfig', function() {
 
         var values = {
-            appName: 'angular-filemanager v1.5',
+            appName: 'angular-filemanager v1.6',
             defaultLang: 'en',
 
-			gatewayUrl: 'https://ipfs.io/ipfs',
+			gatewayUrl: {
+				'ipfs': '',
+				'public': 'https://gateway-cluster-test.shiftnrg.org/ipfs'
+			},
+			pinUrl: '',
 			publishUrl: '',
 			resolveUrl: '',
 			keyGenUrl: '',

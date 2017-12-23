@@ -24,7 +24,7 @@ InsideTransfer.prototype.create = function (data, trs) {
 }
 
 InsideTransfer.prototype.calculateFee = function (trs) {
-	return 0.1 * constants.fixedPoint;
+	return constants.fee * constants.fixedPoint;
 }
 
 InsideTransfer.prototype.verify = function (trs, sender, cb, scope) {

@@ -391,6 +391,34 @@
 //			return path && [apiUrl, $.param(data)].join('?');
 			return path && apiUrl + fileManagerConfig.rootPath + path;
         };
+
+        ApiHandler.prototype.pin = function(apiUrl) {
+            var self = this;
+			var data = {
+                action: 'pin'
+			};
+
+            var deferred = $q.defer();
+            self.inprocess = true;
+			self.status = {title: 'Pinning', text: 'please wait.. '};
+			
+			return $http.post(apiUrl + fileManagerConfig.rootPath).success(function() {
+				console.log('Data succcesfully pinned: '+fileManagerConfig.rootPath);
+				if (self.status) self.status.text = 'Data succcesfully pinned: '+fileManagerConfig.rootPath;
+				fileManagerConfig.pinHash = fileManagerConfig.rootPath;
+				deferred.resolve({});
+			}).catch(function(data, code) {
+				if (self.status) self.status.text = 'Error while pinning';
+				self.deferredHandler(data, deferred, code, $translate.instant('error_pinning'));
+			}).finally(function() {				
+				self.inprocess = false;
+				$timeout(function() {
+					self.status = false;
+				}, 9000);				
+			});
+			
+			return deferred.promise;
+		};
 		
         ApiHandler.prototype.publish = function(apiUrl) {
             var self = this;

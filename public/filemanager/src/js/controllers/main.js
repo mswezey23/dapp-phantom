@@ -33,7 +33,7 @@
         });
 		
 		var scope = angular.element('div[ng-controller="appController"]').scope(); // liskApp
-		angular.forEach(['rootPath','publishHash'], function(value) {
+		angular.forEach(['rootPath','pinHash','publishHash'], function(value) {
 			if (!scope) return;
 			$scope.$watch('config.'+value, function(newValue, oldValue) {
 				scope.$apply(function(){
@@ -341,7 +341,14 @@
                $scope.modal('edit', true);
             });
         };
-		
+        $scope.pin = function() {
+			var pinbtn = angular.element("#pinbtn");
+			
+            $scope.apiMiddleware.pin().then(function(data) {
+//				console.log('pin: ', data);	
+            });
+        };
+			
         $scope.publish = function() {
 			var publishbtn = angular.element("#publishbtn"),
 				publishicon = angular.element("#publishicon");

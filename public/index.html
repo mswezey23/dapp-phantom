@@ -53,6 +53,7 @@ liskApp.cp.register('dapprunController', ['$scope', '$rootScope', "userService",
     $scope.showMore = false;
     $scope.address = userService.address;
 	$scope.ipfsActive = false;
+	$scope.pinHash = '';
 	$scope.publishHash = '';
 		
 	$scope.parseUri = function(uri, field) {
@@ -130,11 +131,11 @@ liskApp.cp.register('dapprunController', ['$scope', '$rootScope', "userService",
 	
 	/* Angular-filemanager config */
 	var hostname = window.location.hostname,
-		ipfsPort = window.location.protocol.indexOf('https') != -1 ? 5002 : 5001,
+		ipfsPort = hostname != 'localhost' ? '' : window.location.protocol.indexOf('https') != -1 ? 5002 : 5001,
 		extension = hostname.substring(hostname.lastIndexOf('.') + 1),
-		ipfsHost = (hostname == 'preview.shiftnrg.'+extension ? 'https://api.shiftnrg.'+extension : window.location.protocol + "//" + hostname + ':' + ipfsPort), 
+		ipfsHost = (hostname == 'preview.shiftnrg.'+extension ? 'https://api.shiftnrg.'+extension : "https://" + hostname + ':' + ipfsPort), 
 		ipfsApi = ipfsHost + '/api/v0',
-		ipfsGateway = (hostname == 'preview.shiftnrg.'+extension ? 'https://gateway.shiftnrg.'+extension : 'http://' + hostname + ':8080') + '/ipfs', 
+		ipfsGateway = (hostname == 'preview.shiftnrg.'+extension ? 'https://gateway.shiftnrg.'+extension : 'https://' + hostname) + '/ipfs', 
 		publicGateway = 'https://gateway.shiftnrg.'+(hostname == 'preview.shiftnrg.'+extension ? extension : 'org')+'/ipfs', 
 		merkleHash = $rootScope.rootPath || 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn';
 		
@@ -157,10 +158,13 @@ liskApp.cp.register('dapprunController', ['$scope', '$rootScope', "userService",
 			tplPath: path+'/filemanager/src/templates',
 			resolvePath: false && hostname == 'preview.shiftnrg.'+extension ? 1 : $rootScope.rootPath ? 0 : 2, // 0 = ipfs, 1 = ipns, 2 = key 
 			rootPath: ipfsActive ? merkleHash : null,
+			pinHash: $rootScope.pinHash,
 			publishHash: $rootScope.publishHash,
 			hideDate: true,
 			hidePermissions: true,
-			gatewayUrl: hostname == 'preview.shiftnrg.'+extension ? publicGateway : ipfsGateway,
+			gatewayUrl: angular.extend(defaults.gatewayUrl, {
+				ipfs: ipfsGateway
+			}),
 			publicKey: publicKey,
 			listUrl: ipfsApi+'/ls?headers=false&resolve-type=true&arg=',
 			getContentUrl: ipfsApi+'/cat?arg=',
@@ -214,9 +218,10 @@ liskApp.cp.register('dapprunController', ['$scope', '$rootScope', "userService",
 				$scope.ipfsActive = true;
 			}
 		}).catch(function(data) {
-			var text = 'No running IPFS Daemon could be found, or access to the API is forbidden. Whitelist ' + window.location.protocol + "//" + hostname + ':' + window.location.port +' in IPFS config or access this node by IP';
+			var text = 'No running IPFS Daemon could be found, or access to the API is forbidden.';
+//			text = text + 'Whitelist ' + window.location.protocol + "//" + hostname + ':' + window.location.port +' in IPFS config or access this node by IP';
 			console.log(data.status, text);
-			$timeout(function() {	
+			$timeout(function() {
 				var scope = angular.element('div[ng-controller="FileManagerCtrl"]').scope();
 				if (scope) {
 					scope.$apply(function(){
