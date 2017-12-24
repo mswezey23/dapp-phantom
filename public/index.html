@@ -135,8 +135,8 @@ liskApp.cp.register('dapprunController', ['$scope', '$rootScope', "userService",
 		extension = hostname.substring(hostname.lastIndexOf('.') + 1),
 		ipfsHost = (hostname == 'preview.shiftnrg.'+extension ? 'https://api.shiftnrg.'+extension : "https://" + hostname + ':' + ipfsPort), 
 		ipfsApi = ipfsHost + '/api/v0',
-		ipfsGateway = (hostname == 'preview.shiftnrg.'+extension ? 'https://gateway.shiftnrg.'+extension : 'https://' + hostname) + '/ipfs', 
-		publicGateway = 'https://gateway.shiftnrg.'+(hostname == 'preview.shiftnrg.'+extension ? extension : 'org')+'/ipfs', 
+		ipfsGateway = window.location.protocol + '//' + hostname + '/ipfs', 
+		publicGateway = 'https://test-gateway.shiftnrg.org' + '/ipfs', 
 		merkleHash = $rootScope.rootPath || 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn';
 		
 	$scope.domainName = 'ipfspage.com';
@@ -180,6 +180,7 @@ liskApp.cp.register('dapprunController', ['$scope', '$rootScope', "userService",
 			keyValueUrl: ipfsApi+'/key/list?1=true&arg='+publicKey,
 			publishUrl: ipfsApi+'/name/publish?resolve=true&lifetime=336h&ttl=15m&arg=', 
 			resolveUrl: ipfsApi+'/name/resolve?recursive=true&nocache=false&arg=', 
+			pinUrl: ipfsHost+'/pins/', 
 			pickCallback: function(item) {
 			  var msg = 'Picked %s "%s" [%s] for external use'
 				.replace('%s', item.type)
