@@ -292,8 +292,18 @@
               <h4 class="modal-title">{{'new_folder' | translate}}</h4>
             </div>
             <div class="modal-body">
-              <label class="radio">{{'folder_name' | translate}}</label>
-              <input class="form-control" ng-model="singleSelection().tempModel.name" autofocus="autofocus">
+			  <div class="row">
+				<label class="radio" for="name">{{'folder_name' | translate}}</label>
+				<input name="name" class="form-control" ng-model="singleSelection().tempModel.name" autofocus="autofocus">
+			  </div>
+			  <div class="row">
+				<input type="checkbox" class="filled-in violet" id="filled-in-box-1" ng-model="ModelData.hash">
+				<label class="radio" for="filled-in-box-1">{{'copy' | translate}} {{'file_content' | translate}}</label>
+			  </div>
+			  <div class="row" ng-show="ModelData.hash">
+				<label class="radio" for="content">Hash</label>
+				<input name="content" class="form-control" ng-model="singleSelection().tempModel.content">
+			  </div> 
               <div ng-include data-src="'error-bar'" class="clearfix"></div>
             </div>
             <div class="modal-footer">

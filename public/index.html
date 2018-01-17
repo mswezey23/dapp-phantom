@@ -136,7 +136,7 @@ liskApp.cp.register('dapprunController', ['$scope', '$rootScope', "userService",
 		ipfsHost = (hostname == 'preview.shiftnrg.'+extension ? 'https://api.shiftnrg.'+extension : window.location.protocol + "//" + hostname + ':' + ipfsPort), 
 		ipfsApi = ipfsHost + '/api/v0',
 		ipfsGateway = window.location.protocol + '//' + hostname + '/ipfs', 
-		publicGateway = 'https://test-gateway.shiftnrg.org' + '/ipfs', 
+		publicGateway = 'https://gateway-test.shiftnrg.org' + '/ipfs', 
 		merkleHash = $rootScope.rootPath || 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn';
 		
 	$scope.domainName = 'ipfspage.com';
@@ -163,7 +163,8 @@ liskApp.cp.register('dapprunController', ['$scope', '$rootScope', "userService",
 			hideDate: true,
 			hidePermissions: true,
 			gatewayUrl: angular.extend(defaults.gatewayUrl, {
-				ipfs: ipfsGateway
+				ipfs: ipfsGateway,
+				public: publicGateway
 			}),
 			publicKey: publicKey,
 			listUrl: ipfsApi+'/ls?headers=false&resolve-type=true&arg=',

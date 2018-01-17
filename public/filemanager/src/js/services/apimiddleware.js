@@ -142,7 +142,9 @@
 
         ApiMiddleware.prototype.createFolder = function(item) {
             var path = item.tempModel.fullPath();
-            return this.apiHandler.createFolder(fileManagerConfig.createFolderUrl, path);
+			var content = item.tempModel.content;
+
+            return this.apiHandler.createFolder(fileManagerConfig.createFolderUrl, path, content);
         };
 
         return ApiMiddleware;
