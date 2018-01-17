@@ -8,7 +8,7 @@
 
 			gatewayUrl: {
 				'ipfs': '',
-				'public': 'https://gateway-cluster-test.shiftnrg.org/ipfs'
+				'public': 'https://gateway.shiftnrg.org/ipfs'
 			},
 			pinUrl: '',
 			publishUrl: '',

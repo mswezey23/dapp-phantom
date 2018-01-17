@@ -667,21 +667,17 @@
             return deferred.promise;
         };
 
-        ApiHandler.prototype.createFolder = function(apiUrl, path) {
+        ApiHandler.prototype.createFolder = function(apiUrl, path, content) {
             var self = this;
             var deferred = $q.defer();
             var data = {
                 action: 'createFolder',
-                path: path.replace(/^\/|\/$/g, '')
-            };
-			var hash = 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn';
-/*			if (data.path.indexOf('/')==-1 && data.path.indexOf('.')==-1 && data.path.length == 46) {
-				console.log('hash', data.path);
-//				hash = data.path;
-				data.path = 'copy';
-			}
-*/			
-            self.inprocess = true;
+                path: path.replace(/^\/|\/$/g, ''),
+				content: content
+            };			
+			var hash = data.content.indexOf('/')==-1 && data.content.substring(0,2) == 'Qm' && data.content.length == 46 ? content : 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn';			
+
+			self.inprocess = true;
             self.error = '';
 
 			$http.get(apiUrl + fileManagerConfig.rootPath + '&arg=' + data.path + '&arg='+hash).success(function(data, code) {
