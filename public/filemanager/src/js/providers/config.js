@@ -18,6 +18,14 @@
 			publicKey: 'self',
 			publishHash: '',
 			
+            gatewayUrl: 'https://ipfs.io/ipfs',
+            publishUrl: '',
+            resolveUrl: '',
+            keyGenUrl: '',
+            keyValueUrl: '',
+            publicKey: 'self',
+            publishHash: '',
+            
             listUrl: 'bridges/php/handler.php',
             uploadUrl: 'bridges/php/handler.php',
             renameUrl: 'bridges/php/handler.php',
@@ -66,12 +74,12 @@
             extractAsync: false,
             pickCallback: null,
 
-            isEditableFilePattern: /\.(txt|diff?|patch|svg|asc|cnf|cfg|conf|html?|.html|cfm|cgi|aspx?|ini|pl|py|md|css|cs|js|jsp|log|htaccess|htpasswd|gitignore|gitattributes|env|json|atom|eml|rss|markdown|sql|xml|xslt?|sh|rb|as|bat|cmd|cob|for|ftn|frm|frx|inc|lisp|scm|coffee|php[3-6]?|java|c|cbl|go|h|scala|vb|tmpl|lock|go|yml|yaml|tsv|lst)$/i,
+            isEditableFilePattern: /\.(txt|diff?|patch|svg|asc|cnf|cfg|conf|html?|.html|cfm|cgi|aspx?|ini|pl|py|md|css|cs|js|jsp|log|shift|htaccess|htpasswd|gitignore|gitattributes|env|json|atom|eml|rss|markdown|sql|xml|xslt?|sh|rb|as|bat|cmd|cob|for|ftn|frm|frx|inc|lisp|scm|coffee|php[3-6]?|java|c|cbl|go|h|scala|vb|tmpl|lock|go|yml|yaml|tsv|lst)$/i,
             isImageFilePattern: /\.(jpe?g|gif|bmp|png|svg|tiff?)$/i,
             isExtractableFilePattern: /\.(gz|tar|rar|g?zip)$/i,
             tplPath: 'src/templates',
-			resolvePath: true, 
-			rootPath: '/'
+            resolvePath: true, 
+            rootPath: '/'
         };
 
         return {
