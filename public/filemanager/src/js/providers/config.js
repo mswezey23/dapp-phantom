@@ -17,14 +17,6 @@
 			keyValueUrl: '',
 			publicKey: 'self',
 			publishHash: '',
-			
-            gatewayUrl: 'https://ipfs.io/ipfs',
-            publishUrl: '',
-            resolveUrl: '',
-            keyGenUrl: '',
-            keyValueUrl: '',
-            publicKey: 'self',
-            publishHash: '',
             
             listUrl: 'bridges/php/handler.php',
             uploadUrl: 'bridges/php/handler.php',
