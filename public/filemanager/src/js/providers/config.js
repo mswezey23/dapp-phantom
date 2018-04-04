@@ -6,17 +6,17 @@
             appName: 'angular-filemanager v1.6',
             defaultLang: 'en',
 
-			gatewayUrl: {
-				'ipfs': '',
-				'public': 'https://gateway.shiftnrg.org/ipfs'
-			},
-			pinUrl: '',
-			publishUrl: '',
-			resolveUrl: '',
-			keyGenUrl: '',
-			keyValueUrl: '',
-			publicKey: 'self',
-			publishHash: '',
+            gatewayUrl: {
+                'ipfs': '',
+                'public': 'https://gateway.shiftnrg.org/ipfs'            
+            },            
+            pinUrl: '',
+            publishUrl: '',
+            resolveUrl: '',
+            keyGenUrl: '',
+            keyValueUrl: '',
+            publicKey: 'self',
+            publishHash: '',
             
             listUrl: 'bridges/php/handler.php',
             uploadUrl: 'bridges/php/handler.php',
