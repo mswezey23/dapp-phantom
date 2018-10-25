@@ -133,17 +133,17 @@ liskApp.cp.register('dapprunController', ['$scope', '$rootScope', "userService",
 	var hostname = window.location.hostname,
 		ipfsPort = hostname != 'localhost' ? '' : window.location.protocol.indexOf('https') != -1 ? 5002 : 5001,
 		extension = hostname.substring(hostname.lastIndexOf('.') + 1),
-		ipfsHost = (hostname == 'preview.shiftnrg.'+extension ? 'https://api.shiftnrg.'+extension : window.location.protocol + "//" + hostname + ':' + ipfsPort), 
+		ipfsHost = window.location.protocol + "//" + hostname + ':' + ipfsPort,
 		ipfsApi = ipfsHost + '/api/v0',
-		ipfsGateway = window.location.protocol + '//' + hostname + '/ipfs', 
-		publicGateway = 'https://gateway-test.shiftnrg.org' + '/ipfs', 
+		ipfsGateway = window.location.protocol + '//' + hostname + '/ipfs',
+		publicGateway = 'https://phoenix-test.shiftnrg.org' + '/ipfs',
 		merkleHash = $rootScope.rootPath || 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn';
 		
 	$scope.domainName = 'ipfspage.com';
 	$scope.serverData = {
-		'hostname': hostname, 
-		'ipfsGateway': ipfsGateway, 
-		'publicGateway': $scope.parseUri(publicGateway), 
+		'hostname': hostname,
+		'ipfsGateway': ipfsGateway,
+		'publicGateway': $scope.parseUri(publicGateway),
 		'isDomain': !$scope.verifyIp(hostname)
 	};
 	
@@ -156,7 +156,7 @@ liskApp.cp.register('dapprunController', ['$scope', '$rootScope', "userService",
 			defaultLang: $scope.selectedLang,
 			breadcrumb: true,
 			tplPath: path+'/filemanager/src/templates',
-			resolvePath: false && hostname == 'preview.shiftnrg.'+extension ? 1 : $rootScope.rootPath ? 0 : 2, // 0 = ipfs, 1 = ipns, 2 = key 
+			resolvePath: $rootScope.rootPath ? 0 : 2, // 0 = ipfs || 1 = ipns || 2 = key
 			rootPath: ipfsActive ? merkleHash : null,
 			pinHash: $rootScope.pinHash,
 			publishHash: $rootScope.publishHash,
@@ -173,15 +173,15 @@ liskApp.cp.register('dapprunController', ['$scope', '$rootScope', "userService",
 			createFolderUrl: ipfsApi+'/object/patch/add-link?arg=',
 			copyUrl: ipfsApi+'/object/patch/add-link?arg=',
 			removeUrl: ipfsApi+'/object/patch/rm-link?arg=',
-			moveUrl: ipfsApi+'/object/patch/add-link?arg=', 
-			renameUrl: ipfsApi+'/object/patch/add-link?arg=', 
-			editUrl: ipfsApi+'/add?pin=false&arg=', 
+			moveUrl: ipfsApi+'/object/patch/add-link?arg=',
+			renameUrl: ipfsApi+'/object/patch/add-link?arg=',
+			editUrl: ipfsApi+'/add?pin=false&arg=',
 			uploadUrl: ipfsApi+'/add?pin=false&arg=',
 			keyGenUrl: ipfsApi+'/key/gen?type=ed25519&arg=',
 			keyValueUrl: ipfsApi+'/key/list?1=true&arg='+publicKey,
-			publishUrl: ipfsApi+'/name/publish?resolve=true&lifetime=336h&ttl=15m&arg=', 
-			resolveUrl: ipfsApi+'/name/resolve?recursive=true&nocache=false&arg=', 
-			pinUrl: ipfsHost+'/pins/', 
+			publishUrl: ipfsApi+'/name/publish?resolve=true&lifetime=336h&ttl=15m&arg=',
+			resolveUrl: ipfsApi+'/name/resolve?recursive=true&nocache=false&arg=',
+			pinUrl: ipfsHost+'/pin/add?hash=',
 			pickCallback: function(item) {
 			  var msg = 'Picked %s "%s" [%s] for external use'
 				.replace('%s', item.type)

@@ -13,8 +13,6 @@ The official SDK for building blockchain apps on the [SHIFT](https://shiftnrg.or
   * **modules.full.json** - JSON file containing a list of defined modules, required by **index.js**.
   * **routes.json** - JSON file defining the HTTP routes of every endpoint in your app's API.
 
-Full documentation is available [here](https://github.com/ShiftNrg/shift-apps-docs).
-
 ## Authors
 
 - Ralf S <ralfs@shiftnrg.org>
@@ -27,7 +25,7 @@ Full documentation is available [here](https://github.com/ShiftNrg/shift-apps-do
 
 The MIT License (MIT)
 
-Copyright (c) 2017 Shift
+Copyright (c) 2017-2018 Shift
 Copyright (c) 2016 Lisk
 Copyright (c) 2015 Crypti
 

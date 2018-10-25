@@ -1,6 +1,6 @@
 {
 	"name": "Phantom",
-	"version": "0.3.0",
+	"version": "0.3.1",
 	"description": "IPFS decentralized application",
 	"repository": "git@github.com:ShiftNrg/dapp-phantom.git",
 	"main": "index.js",
