@@ -25,7 +25,7 @@ The official SDK for building blockchain apps on the [SHIFT](https://shiftnrg.or
 
 The MIT License (MIT)
 
-Copyright (c) 2017-2018 Shift
+Copyright (c) 2017-2019 Shift
 Copyright (c) 2016 Lisk
 Copyright (c) 2015 Crypti
 

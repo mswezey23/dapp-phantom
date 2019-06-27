@@ -8,8 +8,8 @@
 
             gatewayUrl: {
                 'ipfs': '',
-                'public': 'https://gateway.shiftnrg.org/ipfs'            
-            },            
+                'public': 'https://storage-testnet.shiftproject.com/ipfs'
+            },
             pinUrl: '',
             publishUrl: '',
             resolveUrl: '',

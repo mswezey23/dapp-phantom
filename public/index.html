@@ -136,7 +136,7 @@ liskApp.cp.register('dapprunController', ['$scope', '$rootScope', "userService",
 		ipfsHost = window.location.protocol + "//" + hostname + ':' + ipfsPort,
 		ipfsApi = ipfsHost + '/api/v0',
 		ipfsGateway = window.location.protocol + '//' + hostname + '/ipfs',
-		publicGateway = 'https://phoenix-test.shiftnrg.org' + '/ipfs',
+		publicGateway = 'https://storage-testnet.shiftproject.com' + '/ipfs',
 		merkleHash = $rootScope.rootPath || 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn';
 		
 	$scope.domainName = 'ipfspage.com';
@@ -181,7 +181,7 @@ liskApp.cp.register('dapprunController', ['$scope', '$rootScope', "userService",
 			keyValueUrl: ipfsApi+'/key/list?1=true&arg='+publicKey,
 			publishUrl: ipfsApi+'/name/publish?resolve=true&lifetime=336h&ttl=15m&arg=',
 			resolveUrl: ipfsApi+'/name/resolve?recursive=true&nocache=false&arg=',
-			pinUrl: ipfsHost+'/pin/add?hash=',
+			pinUrl: ipfsHost+'/pin/add?senderId='+userService.address+'&hash=',
 			pickCallback: function(item) {
 			  var msg = 'Picked %s "%s" [%s] for external use'
 				.replace('%s', item.type)
